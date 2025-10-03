@@ -10,7 +10,7 @@
 
 **Local video presentation**:
 <video width="800" controls>
-  <source src="../video-presentation.mov" type="video/quicktime">
+  <source src="video-submission.mov" type="video/quicktime">
   Your browser does not support the video tag. <a href="video-presentation.mov">Download the video</a>
 </video>
 
