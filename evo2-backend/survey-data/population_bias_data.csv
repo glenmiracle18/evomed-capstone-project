@@ -1,0 +1,6 @@
+population,baseline_fpr,adjusted_fpr,improvement_percent,patient_count,baseline_false_positives,adjusted_false_positives,patients_helped
+European,0.15,0.15,0.0,1000,150,150,0
+African,0.28,0.17,39.3,300,84,51,33
+Asian,0.22,0.20,9.1,200,44,40,4
+Hispanic/Latino,0.19,0.18,5.3,250,48,45,3
+Other,0.20,0.19,5.0,150,30,29,1

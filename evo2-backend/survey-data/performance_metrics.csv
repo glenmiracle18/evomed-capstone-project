@@ -1,0 +1,5 @@
+metric,standard_evo2,african_population_aware,improvement,improvement_percent
+AUROC,0.850,0.880,0.030,3.5
+Precision,0.780,0.830,0.050,6.4
+Recall,0.820,0.840,0.020,2.4
+F1-Score,0.800,0.835,0.035,4.4
