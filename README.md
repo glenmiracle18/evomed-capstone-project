@@ -4,16 +4,8 @@
 
 **GitHub Repository**: [https://github.com/glenmiracle18/variant-analysis-evo2](https://github.com/your-username/variant-analysis-evo2)
 
+
 ---
-## Presentation Video
-**Youtube video link**: [https://youtu.be/6j-YYy43zRU](https://youtu.be/6j-YYy43zRU)
-
-**Local video presentation**:
-<video width="800" controls>
-  <source src="video-submission.mov" type="video/quicktime">
-  Your browser does not support the video tag. <a href="video-presentation.mov">Download the video</a>
-</video>
-
 
 ## 📋 Project Overview
 
