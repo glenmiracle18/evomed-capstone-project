@@ -23,7 +23,9 @@ import {
   Search,
   Shield,
   Zap,
+  HelpCircle,
 } from "lucide-react";
+import { Tooltip } from "./ui/tooltip";
 import { getClassificationColorClasses } from "~/utils/coloring-utils";
 
 export default function KnownVariants({
@@ -106,9 +108,12 @@ export default function KnownVariants({
   return (
     <Card className="gap-0 border-none bg-white py-0 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pt-4 pb-2">
-        <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
-          Known Variants in Gene from ClinVar
-        </CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
+            Known Variants in Gene from ClinVar
+          </CardTitle>
+          <Tooltip content="ClinVar is a public database containing information about genetic variants and their clinical significance. These are known variants in this gene with classifications like pathogenic, benign, or uncertain significance from clinical studies." />
+        </div>
         <Button
           variant="ghost"
           size="sm"

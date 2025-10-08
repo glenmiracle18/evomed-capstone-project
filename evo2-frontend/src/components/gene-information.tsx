@@ -4,7 +4,8 @@ import type {
   GeneFromSearch,
 } from "~/utils/genome-api";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, HelpCircle } from "lucide-react";
+import { Tooltip } from "./ui/tooltip";
 
 export function GeneInformation({
   gene,
@@ -18,9 +19,12 @@ export function GeneInformation({
   return (
     <Card className="gap-0 border-none bg-white py-0 shadow-sm">
       <CardHeader className="pt-4 pb-2">
-        <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
-          Gene Information
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
+            Gene Information
+          </CardTitle>
+          <Tooltip content="Basic information about this gene including its symbol, full name, location on the chromosome, and links to external databases. This data comes from genomic reference databases and provides context about the gene's function and characteristics." />
+        </div>
       </CardHeader>
       <CardContent className="pb-4">
         <div className="grid gap-4 md:grid-cols-2">

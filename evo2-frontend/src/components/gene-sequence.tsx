@@ -14,6 +14,8 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { getNucleotideColorClass } from "~/utils/coloring-utils";
+import { HelpCircle } from "lucide-react";
+import { Tooltip } from "./ui/tooltip";
 
 export function GeneSequence({
   geneBounds,
@@ -265,9 +267,12 @@ export function GeneSequence({
   return (
     <Card className="gap-0 border-none bg-white py-0 shadow-sm">
       <CardHeader className="pt-4 pb-2">
-        <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
-          Gene Sequence
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
+            Gene Sequence
+          </CardTitle>
+          <Tooltip content="View the DNA sequence of this gene region. Enter genomic coordinates to load a specific sequence range. Click on any nucleotide to select it for variant analysis. The sequence shows the reference genome nucleotides (A, T, G, C) at each position." />
+        </div>
       </CardHeader>
 
       <CardContent className="pb-4">

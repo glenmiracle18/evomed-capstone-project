@@ -22,7 +22,8 @@ import {
 } from "~/utils/coloring-utils";
 import { Button } from "./ui/button";
 import { match } from "node:assert";
-import { Zap, Globe, Info } from "lucide-react";
+import { Zap, Globe, Info, HelpCircle } from "lucide-react";
+import { Tooltip } from "./ui/tooltip";
 
 export interface VariantAnalysisHandle {
   focusAlternativeInput: () => void;
@@ -123,9 +124,12 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
     return (
       <Card className="gap-0 border-none bg-white py-0 shadow-sm">
         <CardHeader className="pt-4 pb-2">
-          <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
-            Variant Analysis
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
+              Variant Analysis
+            </CardTitle>
+            <Tooltip content="Analyze genetic variants using the Evo2 deep learning model. Enter a position and alternative nucleotide to predict the pathogenicity of variants. The model is trained to identify potentially harmful genetic changes." />
+          </div>
         </CardHeader>
         <CardContent className="pb-4">
           <p className="mb-4 text-xs text-[#3c4f3d]/80">
