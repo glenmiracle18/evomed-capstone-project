@@ -4,6 +4,7 @@
 
 **GitHub Repository**: [https://github.com/glenmiracle18/variant-analysis-evo2](https://github.com/your-username/variant-analysis-evo2)
 
+**Figma Prototype**: [https://www.figma.com/design/7ZdmnpHnRiyH00COkcURCJ/Capstone-Protoype?node-id=0-1&t=HMomzGvU5TMPyF7I-1](https://www.figma.com/design/7ZdmnpHnRiyH00COkcURCJ/Capstone-Protoype?node-id=0-1&t=HMomzGvU5TMPyF7I-1)
 
 ---
 
@@ -159,10 +160,10 @@ evo2-backend/
 def calculate_population_adjustment(delta_score, freq_data):
     """
     Adjust Evo2 score based on African population frequencies
-    
+
     Rules:
     • AF > 5%: +0.004 (strong benign evidence)
-    • AF > 1%: +0.002 (moderate benign evidence)  
+    • AF > 1%: +0.002 (moderate benign evidence)
     • AF > 0.5%: +0.001 (mild benign evidence)
     • Population-specific variants: +0.003 additional
     """
