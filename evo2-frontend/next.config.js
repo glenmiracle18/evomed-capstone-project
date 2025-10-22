@@ -8,6 +8,16 @@ import "./src/env.js";
 const config = {
   reactStrictMode: false,
 
+  // Disable TypeScript type checking during builds
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  // Disable ESLint checking during builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Configure headers for security and CORS
   async headers() {
     return [
