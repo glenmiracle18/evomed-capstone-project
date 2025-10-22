@@ -1,11 +1,12 @@
 import { SignIn } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 
 export default function SignInPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-black">
       <SignIn
         appearance={{
-          baseTheme: "dark",
+          baseTheme: dark,
           elements: {
             rootBox: "mx-auto",
             card: "bg-gray-900 border border-gray-700",
