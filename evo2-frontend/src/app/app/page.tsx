@@ -3,7 +3,7 @@
 import { useUser, UserButton } from "@clerk/nextjs";
 import { Clapperboard, Search, SearchCodeIcon, HelpCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import GeneViewer from "~/components/gene-viewer";
+import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -37,11 +37,11 @@ type Mode = "browse" | "search";
 
 export default function HomePage() {
   const { user, isLoaded } = useUser();
+  const router = useRouter();
   const [genomes, setGenomes] = useState<GenomeAssemblyFromSearch[]>([]);
   const [selectedGenome, setSelectedGenome] = useState<string>("hg38");
   const [chromosomes, setChromosomes] = useState<ChromosomeFromSeach[]>([]);
   const [selectedChromosome, setSelectedChromosome] = useState<string>("chr1");
-  const [selectedGene, setSelectedGene] = useState<GeneFromSearch | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeneFromSearch[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +64,15 @@ export default function HomePage() {
     };
     fetchGenomes();
   }, []);
+
+  // Load BRCA1 example by default
+  useEffect(() => {
+    if (genomes.length > 0 && selectedGenome && !searchResults.length && !isLoading) {
+      setMode("search");
+      setSearchQuery("BRCA1");
+      performGeneSearch("BRCA1", selectedGenome);
+    }
+  }, [genomes, selectedGenome]);
 
   useEffect(() => {
     const fetchChromosomes = async () => {
@@ -148,6 +157,11 @@ export default function HomePage() {
     performGeneSearch("BRCA1", selectedGenome);
   };
 
+  const handleGeneSelect = (gene: GeneFromSearch) => {
+    // Navigate to dedicated gene page with properly encoded gene symbol
+    router.push(`/app/gene/${encodeURIComponent(gene.symbol)}?genome=${selectedGenome}`);
+  };
+
   // Handle loading and authentication states
   if (!isLoaded) {
     return (
@@ -197,15 +211,7 @@ export default function HomePage() {
       </header>
 
       <main className="container mx-auto px-6 py-6">
-        {selectedGene ? (
-          <GeneViewer
-            gene={selectedGene}
-            genomeId={selectedGenome}
-            onClose={() => setSelectedGene(null)}
-          />
-        ) : (
-          <>
-            <Card className="mb-6 gap-0 border-none bg-white py-0 shadow-sm">
+        <Card className="mb-6 gap-0 border-none bg-white py-0 shadow-sm">
               <CardHeader className="pt-4 pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
@@ -366,7 +372,7 @@ export default function HomePage() {
                       <Tooltip content={mode === "search" ? "Click on any gene row to view detailed information including gene sequence, variants, and analysis tools. The results show genes matching your search query." : `Click on any gene row to explore detailed information. The results show all genes located on chromosome ${selectedChromosome}.`} />
                     </div>
 
-                    <div className="overflow-hidden rounded-md border border-[#3c4f3d]/5">
+                    <div className="overflow-x-auto overflow-y-visible rounded-md border border-[#3c4f3d]/5">
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-[#e9eeea]/50 hover:bg-[e9eeea]/70">
@@ -395,7 +401,7 @@ export default function HomePage() {
                             <TableRow
                               key={`${gene.symbol}-${index}`}
                               className="cursor-pointer border-b border-[#3c4f3d]/5 hover:bg-[#e9eeea]/50"
-                              onClick={() => setSelectedGene(gene)}
+                              onClick={() => handleGeneSelect(gene)}
                             >
                               <TableCell className="py-2 font-medium text-[#3c4f3d]">
                                 {gene.symbol}
@@ -428,8 +434,6 @@ export default function HomePage() {
                 )}
               </CardContent>
             </Card>
-          </>
-        )}
       </main>
     </div>
   );

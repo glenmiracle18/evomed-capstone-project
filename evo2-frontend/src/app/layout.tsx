@@ -7,17 +7,34 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "../styles/globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const satoshi = localFont({
+  src: [
+    {
+      path: "../fonts/Satoshi-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Satoshi-Medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Satoshi-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Satoshi-Black.ttf",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+  variable: "--font-satoshi",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -34,7 +51,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${satoshi.variable} font-satoshi antialiased`}
         >
           {children}
         </body>
