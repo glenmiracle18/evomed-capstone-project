@@ -49,13 +49,13 @@ export default function LandingPage() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover z-0"
       >
-        <source src="/landingpage-video.mp4" type="video/mp4" />
+        <source src="/landingpage-video2.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      
+
       {/* Dark tinted overlay */}
       <div className="absolute inset-0 bg-black/60 z-10"></div>
-      
+
       {/* Content overlay */}
       <div className={`relative z-20 min-h-screen text-white flex flex-col transition-all duration-1000 ease-out ${
         contentVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'

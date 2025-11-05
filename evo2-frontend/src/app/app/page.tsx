@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser, UserButton } from "@clerk/nextjs";
-import { Clapperboard, Search, SearchCodeIcon, HelpCircle } from "lucide-react";
+import { Search, HelpCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
@@ -42,6 +42,7 @@ export default function HomePage() {
   const [selectedGenome, setSelectedGenome] = useState<string>("hg38");
   const [chromosomes, setChromosomes] = useState<ChromosomeFromSeach[]>([]);
   const [selectedChromosome, setSelectedChromosome] = useState<string>("chr1");
+  const [selectedGene, setSelectedGene] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeneFromSearch[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +68,12 @@ export default function HomePage() {
 
   // Load BRCA1 example by default
   useEffect(() => {
-    if (genomes.length > 0 && selectedGenome && !searchResults.length && !isLoading) {
+    if (
+      genomes.length > 0 &&
+      selectedGenome &&
+      !searchResults.length &&
+      !isLoading
+    ) {
       setMode("search");
       setSearchQuery("BRCA1");
       performGeneSearch("BRCA1", selectedGenome);
@@ -159,7 +165,9 @@ export default function HomePage() {
 
   const handleGeneSelect = (gene: GeneFromSearch) => {
     // Navigate to dedicated gene page with properly encoded gene symbol
-    router.push(`/app/gene/${encodeURIComponent(gene.symbol)}?genome=${selectedGenome}`);
+    router.push(
+      `/app/gene/${encodeURIComponent(gene.symbol)}?genome=${selectedGenome}`,
+    );
   };
 
   // Handle loading and authentication states
@@ -190,251 +198,236 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e9eeea]">
-      <header className="border-b border-[#3c4f3d]/10 bg-white">
-        <div className="container mx-auto px-6 py-4">
+    <main className="container mx-auto px-6 py-6">
+      <Card className="mb-6 gap-0 border-none bg-white py-0 shadow-sm">
+        <CardHeader className="pt-4 pb-2">
           <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
+              Genome Assembly
+            </CardTitle>
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <h1 className="text-xl font-light tracking-wide text-[#3c4f3d]">
-                  <span className="font-normal">EvoMed</span>
-                </h1>
-                <div className="absolute -bottom-1 left-0 h-[2px] w-16 bg-[#de8246]"></div>
+              <div className="text-xs text-[#3c4f3d]/60">
+                Organism: <span className="font-medium">Human</span>
               </div>
-              <span className="text-sm font-light text-[#3c4f3d]/70">
-                Variant Analysis
-              </span>
+              <Tooltip content="A genome assembly is a computational representation of a genome sequence. Different assemblies (like hg38, hg19) represent different versions of the human genome reference with varying levels of completeness and accuracy." />
             </div>
-            <UserButton />
           </div>
-        </div>
-      </header>
+        </CardHeader>
+        <CardContent className="pb-4">
+          <Select
+            value={selectedGenome}
+            onValueChange={handleGenomeChange}
+            disabled={isLoading}
+          >
+            <SelectTrigger className="h-9 w-full border-[#3c4f3d]/10">
+              <SelectValue placeholder="Select genome assembly" />
+            </SelectTrigger>
+            <SelectContent>
+              {genomes.map((genome) => (
+                <SelectItem key={genome.id} value={genome.id}>
+                  {genome.id} - {genome.name}
+                  {genome.active ? " (active)" : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedGenome && (
+            <p className="mt-2 text-xs text-[#3c4f3d]/60">
+              {
+                genomes.find((genome) => genome.id === selectedGenome)
+                  ?.sourceName
+              }
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
-      <main className="container mx-auto px-6 py-6">
-        <Card className="mb-6 gap-0 border-none bg-white py-0 shadow-sm">
-              <CardHeader className="pt-4 pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
-                    Genome Assembly
-                  </CardTitle>
-                  <div className="flex items-center gap-3">
-                    <div className="text-xs text-[#3c4f3d]/60">
-                      Organism: <span className="font-medium">Human</span>
-                    </div>
-                    <Tooltip content="A genome assembly is a computational representation of a genome sequence. Different assemblies (like hg38, hg19) represent different versions of the human genome reference with varying levels of completeness and accuracy." />
+      <Card className="mt-6 gap-0 border-none bg-white py-0 shadow-sm">
+        <CardHeader className="pt-4 pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
+              Browse
+            </CardTitle>
+            <Tooltip content="Search for specific genes by name or symbol, or browse genes by chromosome. Use the search function to find genes like BRCA1, or browse chromosomes to see all genes in a specific region." />
+          </div>
+        </CardHeader>
+        <CardContent className="pb-4">
+          <Tabs
+            value={mode}
+            onValueChange={(value) => switchMode(value as Mode)}
+          >
+            <TabsList className="mb-4 bg-[#e9eeea]">
+              <TabsTrigger
+                className="data-[state=active]:bg-white data-[state=active]:text-[#3c4f3d]"
+                value="search"
+              >
+                Search Genes
+              </TabsTrigger>
+              <TabsTrigger
+                className="data-[state=active]:bg-white data-[state=active]:text-[#3c4f3d]"
+                value="browse"
+              >
+                Browse Chromosomes
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="search" className="mt-0">
+              <div className="space-y-4">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex flex-col gap-3 sm:flex-row"
+                >
+                  <div className="relative flex-1">
+                    <Input
+                      type="text"
+                      placeholder="Enter gene symbol or name"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="h-9 border-[#3c4f3d]/10 pr-10"
+                    />
+                    <Button
+                      type="submit"
+                      className="absolute top-0 right-0 h-full cursor-pointer rounded-l-none bg-[#3c4f3d] text-white hover:bg-[#3c4f3d]/90"
+                      size="icon"
+                      disabled={isLoading || !searchQuery.trim()}
+                    >
+                      <Search className="h-4 w-4" />
+                      <span className="sr-only">Search</span>
+                    </Button>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pb-4">
-                <Select
-                  value={selectedGenome}
-                  onValueChange={handleGenomeChange}
-                  disabled={isLoading}
+                </form>
+                <Button
+                  variant="link"
+                  className="h-auto cursor-pointer p-0 text-[#de8246] hover:text-[#de8246]/80"
+                  onClick={loadBRCA1Example}
                 >
-                  <SelectTrigger className="h-9 w-full border-[#3c4f3d]/10">
-                    <SelectValue placeholder="Select genome assembly" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {genomes.map((genome) => (
-                      <SelectItem key={genome.id} value={genome.id}>
-                        {genome.id} - {genome.name}
-                        {genome.active ? " (active)" : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {selectedGenome && (
-                  <p className="mt-2 text-xs text-[#3c4f3d]/60">
-                    {
-                      genomes.find((genome) => genome.id === selectedGenome)
-                        ?.sourceName
-                    }
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+                  Try BRCA1 example
+                </Button>
+              </div>
+            </TabsContent>
 
-            <Card className="mt-6 gap-0 border-none bg-white py-0 shadow-sm">
-              <CardHeader className="pt-4 pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
-                    Browse
-                  </CardTitle>
-                  <Tooltip content="Search for specific genes by name or symbol, or browse genes by chromosome. Use the search function to find genes like BRCA1, or browse chromosomes to see all genes in a specific region." />
+            <TabsContent value="browse" className="mt-0">
+              <div className="max-h-[150px] overflow-y-auto pr-1">
+                <div className="flex flex-wrap gap-2">
+                  {chromosomes.map((chrom) => (
+                    <Button
+                      key={chrom.name}
+                      variant="outline"
+                      size="sm"
+                      className={`h-8 cursor-pointer border-[#3c4f3d]/10 hover:bg-[#e9eeea] hover:text-[#3c4f3d] ${selectedChromosome === chrom.name ? "text[#3c4f3d] bg-[#e9eeea]" : ""}`}
+                      onClick={() => setSelectedChromosome(chrom.name)}
+                    >
+                      {chrom.name}
+                    </Button>
+                  ))}
                 </div>
-              </CardHeader>
-              <CardContent className="pb-4">
-                <Tabs
-                  value={mode}
-                  onValueChange={(value) => switchMode(value as Mode)}
-                >
-                  <TabsList className="mb-4 bg-[#e9eeea]">
-                    <TabsTrigger
-                      className="data-[state=active]:bg-white data-[state=active]:text-[#3c4f3d]"
-                      value="search"
-                    >
-                      Search Genes
-                    </TabsTrigger>
-                    <TabsTrigger
-                      className="data-[state=active]:bg-white data-[state=active]:text-[#3c4f3d]"
-                      value="browse"
-                    >
-                      Browse Chromosomes
-                    </TabsTrigger>
-                  </TabsList>
+              </div>
+            </TabsContent>
+          </Tabs>
 
-                  <TabsContent value="search" className="mt-0">
-                    <div className="space-y-4">
-                      <form
-                        onSubmit={handleSearch}
-                        className="flex flex-col gap-3 sm:flex-row"
-                      >
-                        <div className="relative flex-1">
-                          <Input
-                            type="text"
-                            placeholder="Enter gene symbol or name"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="h-9 border-[#3c4f3d]/10 pr-10"
-                          />
-                          <Button
-                            type="submit"
-                            className="absolute top-0 right-0 h-full cursor-pointer rounded-l-none bg-[#3c4f3d] text-white hover:bg-[#3c4f3d]/90"
-                            size="icon"
-                            disabled={isLoading || !searchQuery.trim()}
-                          >
-                            <Search className="h-4 w-4" />
-                            <span className="sr-only">Search</span>
-                          </Button>
+          {isLoading && (
+            <div className="flex justify-center py-4">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3c4f3d]/30 border-t-[#de8243]"></div>
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          {searchResults.length > 0 && !isLoading && (
+            <div className="mt-6">
+              <div className="mb-2 flex items-center justify-between">
+                <h4 className="text-xs font-normal text-[#3c4f3d]/70">
+                  {mode === "search" ? (
+                    <>
+                      Search Results:{" "}
+                      <span className="font-medium text-[#3c4f3d]">
+                        {searchResults.length} genes
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      Genes on {selectedChromosome}:{" "}
+                      <span className="font-medium text-[#3c4f3d]">
+                        {searchResults.length} found
+                      </span>
+                    </>
+                  )}
+                </h4>
+                <Tooltip
+                  content={
+                    mode === "search"
+                      ? "Click on any gene row to view detailed information including gene sequence, variants, and analysis tools. The results show genes matching your search query."
+                      : `Click on any gene row to explore detailed information. The results show all genes located on chromosome ${selectedChromosome}.`
+                  }
+                />
+              </div>
+
+              <div className="overflow-x-auto overflow-y-visible rounded-md border border-[#3c4f3d]/5">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-[#e9eeea]/50 hover:bg-[e9eeea]/70">
+                      <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
+                        <div className="flex items-center justify-between">
+                          Symbol
+                          <Tooltip content="Gene symbol - a short abbreviation that represents the gene (e.g., BRCA1, TP53)" />
                         </div>
-                      </form>
-                      <Button
-                        variant="link"
-                        className="h-auto cursor-pointer p-0 text-[#de8246] hover:text-[#de8246]/80"
-                        onClick={loadBRCA1Example}
+                      </TableHead>
+                      <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
+                        <div className="flex items-center justify-between">
+                          Name
+                          <Tooltip content="Full gene name - the complete descriptive name of the gene's function" />
+                        </div>
+                      </TableHead>
+                      <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
+                        <div className="flex items-center justify-between">
+                          Location
+                          <Tooltip content="Chromosomal location - shows which chromosome the gene is located on (e.g., chr17, chr1)" />
+                        </div>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {searchResults.map((gene, index) => (
+                      <TableRow
+                        key={`${gene.symbol}-${index}`}
+                        className="cursor-pointer border-b border-[#3c4f3d]/5 hover:bg-[#e9eeea]/50"
+                        onClick={() => handleGeneSelect(gene)}
                       >
-                        Try BRCA1 example
-                      </Button>
-                    </div>
-                  </TabsContent>
+                        <TableCell className="py-2 font-medium text-[#3c4f3d]">
+                          {gene.symbol}
+                        </TableCell>
+                        <TableCell className="py-2 font-medium text-[#3c4f3d]">
+                          {gene.name}
+                        </TableCell>
+                        <TableCell className="py-2 font-medium text-[#3c4f3d]">
+                          {gene.chrom}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
 
-                  <TabsContent value="browse" className="mt-0">
-                    <div className="max-h-[150px] overflow-y-auto pr-1">
-                      <div className="flex flex-wrap gap-2">
-                        {chromosomes.map((chrom) => (
-                          <Button
-                            key={chrom.name}
-                            variant="outline"
-                            size="sm"
-                            className={`h-8 cursor-pointer border-[#3c4f3d]/10 hover:bg-[#e9eeea] hover:text-[#3c4f3d] ${selectedChromosome === chrom.name ? "text[#3c4f3d] bg-[#e9eeea]" : ""}`}
-                            onClick={() => setSelectedChromosome(chrom.name)}
-                          >
-                            {chrom.name}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-
-                {isLoading && (
-                  <div className="flex justify-center py-4">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3c4f3d]/30 border-t-[#de8243]"></div>
-                  </div>
-                )}
-
-                {error && (
-                  <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                    {error}
-                  </div>
-                )}
-
-                {searchResults.length > 0 && !isLoading && (
-                  <div className="mt-6">
-                    <div className="mb-2 flex items-center justify-between">
-                      <h4 className="text-xs font-normal text-[#3c4f3d]/70">
-                        {mode === "search" ? (
-                          <>
-                            Search Results:{" "}
-                            <span className="font-medium text-[#3c4f3d]">
-                              {searchResults.length} genes
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            Genes on {selectedChromosome}:{" "}
-                            <span className="font-medium text-[#3c4f3d]">
-                              {searchResults.length} found
-                            </span>
-                          </>
-                        )}
-                      </h4>
-                      <Tooltip content={mode === "search" ? "Click on any gene row to view detailed information including gene sequence, variants, and analysis tools. The results show genes matching your search query." : `Click on any gene row to explore detailed information. The results show all genes located on chromosome ${selectedChromosome}.`} />
-                    </div>
-
-                    <div className="overflow-x-auto overflow-y-visible rounded-md border border-[#3c4f3d]/5">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-[#e9eeea]/50 hover:bg-[e9eeea]/70">
-                            <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
-                              <div className="flex items-center justify-between">
-                                Symbol
-                                <Tooltip content="Gene symbol - a short abbreviation that represents the gene (e.g., BRCA1, TP53)" />
-                              </div>
-                            </TableHead>
-                            <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
-                              <div className="flex items-center justify-between">
-                                Name
-                                <Tooltip content="Full gene name - the complete descriptive name of the gene's function" />
-                              </div>
-                            </TableHead>
-                            <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
-                              <div className="flex items-center justify-between">
-                                Location
-                                <Tooltip content="Chromosomal location - shows which chromosome the gene is located on (e.g., chr17, chr1)" />
-                              </div>
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {searchResults.map((gene, index) => (
-                            <TableRow
-                              key={`${gene.symbol}-${index}`}
-                              className="cursor-pointer border-b border-[#3c4f3d]/5 hover:bg-[#e9eeea]/50"
-                              onClick={() => handleGeneSelect(gene)}
-                            >
-                              <TableCell className="py-2 font-medium text-[#3c4f3d]">
-                                {gene.symbol}
-                              </TableCell>
-                              <TableCell className="py-2 font-medium text-[#3c4f3d]">
-                                {gene.name}
-                              </TableCell>
-                              <TableCell className="py-2 font-medium text-[#3c4f3d]">
-                                {gene.chrom}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                )}
-
-                {!isLoading && !error && searchResults.length === 0 && (
-                  <div className="flex h-48 flex-col items-center justify-center text-center text-gray-400">
-                    <Search className="mb-4 h-10 w-10 text-gray-400" />
-                    <p className="text-sm leading-relaxed">
-                      {mode === "search"
-                        ? "Enter a gene or symbol and click search"
-                        : selectedChromosome
-                          ? "No genes found on this chromosome"
-                          : "Select a chromosome to view genes"}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-      </main>
-    </div>
+          {!isLoading && !error && searchResults.length === 0 && (
+            <div className="flex h-48 flex-col items-center justify-center text-center text-gray-400">
+              <Search className="mb-4 h-10 w-10 text-gray-400" />
+              <p className="text-sm leading-relaxed">
+                {mode === "search"
+                  ? "Enter a gene or symbol and click search"
+                  : selectedChromosome
+                    ? "No genes found on this chromosome"
+                    : "Select a chromosome to view genes"}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </main>
   );
 }

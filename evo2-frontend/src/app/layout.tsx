@@ -1,12 +1,5 @@
 import { type Metadata } from "next";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
 import "../styles/globals.css";
 
@@ -50,9 +43,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${satoshi.variable} font-satoshi antialiased`}
-        >
+        <body className={`${satoshi.variable} font-satoshi antialiased`}>
           {children}
         </body>
       </html>
