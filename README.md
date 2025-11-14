@@ -447,11 +447,23 @@ python test_load.py --concurrent=10 --requests=100
 2. Karczewski et al. (2020). "The mutational constraint spectrum quantified from variation in 141,456 humans." Nature.
 3. Martin et al. (2019). "Clinical use of current polygenic risk scores may exacerbate health disparities." Nature Genetics.
 
-### Technical References
-- Evo2 Model: [Arc Institute](https://github.com/ArcInstitute/evo2)
-- gnomAD Database: [Broad Institute](https://gnomad.broadinstitute.org/)
-- Modal Deployment: [Modal Labs](https://modal.com/)
+### 🙏 Acknowledgment of Base Implementation
 
+This project builds upon the foundational Evo2 implementation by **Andreas Trolle**
+([https://github.com/Andreaswt/variant-analysis-evo2](https://github.com/Andreaswt/variant-analysis-evo2)),
+which provided the base model integration and inference pipeline.
+
+**My Original Contributions:**
+- African population-specific bias mitigation algorithm
+- gnomAD population frequency service integration
+- BRCA1 saturation mutagenesis dataset analysis
+- Population-aware variant classification system
+- Clinical deployment and validation framework
+- Comprehensive testing suite for population adjustments
+
+The core innovation of this capstone is the **population-aware adjustment layer**
+that addresses ancestry bias in genomic AI—a problem not addressed in the original
+implementation.
 ---
 
 ## 🏥 Clinical Validation
@@ -472,10 +484,11 @@ python test_load.py --concurrent=10 --requests=100
 
 ## 📞 Support and Contact
 
-### Technical Support
-- **Issues**: GitHub Issues page
-- **Documentation**: [Project Wiki](https://github.com/your-username/variant-analysis-evo2/wiki)
-- **Community**: [Discussions](https://github.com/your-username/variant-analysis-evo2/discussions)
+### Technical References
+- **Base Implementation**: Andreas Trolle's Evo2 Variant Analysis ([GitHub](https://github.com/Andreaswt/variant-analysis-evo2))
+- Evo2 Model: [Arc Institute](https://github.com/ArcInstitute/evo2)
+- gnomAD Database: [Broad Institute](https://gnomad.broadinstitute.org/)
+- Modal Deployment: [Modal Labs](https://modal.com/)
 
 ### Research Collaboration
 - **Email**: m.bonyu@alustudent.com
