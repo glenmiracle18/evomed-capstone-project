@@ -24,10 +24,13 @@ const config = {
   },
 
   // Configure webpack to handle path aliases
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      "~": path.resolve(__dirname, "src"),
+      "~": path.join(__dirname, "src"),
+      "~/lib": path.join(__dirname, "src", "lib"),
+      "~/components": path.join(__dirname, "src", "components"),
+      "~/utils": path.join(__dirname, "src", "utils"),
     };
     return config;
   },
