@@ -3,7 +3,6 @@ import sys
 import modal
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
-
 from pydantic import BaseModel
 
 
@@ -61,6 +60,7 @@ evo2_image = (
     )
     .pip_install_from_requirements("requirements.txt")
     .add_local_file("population_service.py", "/root/population_service.py")
+    .add_local_file("genomic_context_service.py", "/root/genomic_context_service.py")
 )
 
 app = modal.App("variant-analysis-evo2", image=evo2_image)
@@ -71,11 +71,14 @@ mount_path = "/root/.cache/huggingface"
 # Volume for population frequency caching
 population_volume = modal.Volume.from_name("population_cache", create_if_missing=True)
 
+# Volume for genomic context caching
+context_volume = modal.Volume.from_name("genomic_context_cache", create_if_missing=True)
+
 
 def patch_flash_attn_imports():
     """Minimal patches - only mock the flash attention CUDA modules that cause import errors"""
-    import sys
     import os
+    import sys
     import types
 
     # Set environment variables to disable flash attention
@@ -227,14 +230,15 @@ def patch_flash_attn_imports():
 @app.function(gpu="H100", volumes={mount_path: volume}, timeout=1000)
 def run_brca1_analysis():
     import base64
-    from io import BytesIO
-    from Bio import SeqIO
     import gzip
+    import os
+    from io import BytesIO
+
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    import os
     import seaborn as sns
+    from Bio import SeqIO
     from sklearn.metrics import roc_auc_score, roc_curve
 
     # Apply flash attention patches before importing evo2
@@ -405,8 +409,9 @@ def run_brca1_analysis():
 def brca1_example():
     import base64
     from io import BytesIO
-    import matplotlib.pyplot as plt
+
     import matplotlib.image as mpimg
+    import matplotlib.pyplot as plt
 
     print("Running BRCA1 variant analysis with Evo2...")
 
@@ -502,9 +507,10 @@ def analyze_variant_with_population(
     chromosome,
     position,
     population_service,
+    genomic_context_service=None,
     use_african_adjustment=True,
 ):
-    """Enhanced variant analysis with African population-specific scoring"""
+    """Enhanced variant analysis with comprehensive African population-specific scoring and genomic context"""
     from population_service import (
         calculate_population_adjustment,
         classify_variant_with_population,
@@ -520,30 +526,85 @@ def analyze_variant_with_population(
     var_score = model.score_sequences([var_seq])[0]
     delta_score = var_score - ref_score
 
-    # 2. Get population frequencies if African adjustment is enabled
+    # 2. Get genomic context (region type, coding status, etc.)
+    genomic_context = None
+    if genomic_context_service and use_african_adjustment:
+        try:
+            genomic_context = genomic_context_service.get_variant_consequence(
+                chromosome, position, reference, alternative
+            )
+            if genomic_context:
+                print(
+                    f"Genomic context: {genomic_context.get('region_type')}, "
+                    f"coding={genomic_context.get('is_coding')}, "
+                    f"impact={genomic_context.get('impact')}"
+                )
+        except Exception as e:
+            print(f"Error fetching genomic context: {e}")
+            genomic_context = None
+
+    # 3. Get population frequencies if African adjustment is enabled
     freq_data = None
+    kg1000_data = None
+
     if use_african_adjustment:
+        # Try gnomAD first
         try:
             freq_data = population_service.get_population_frequency(
                 chromosome, position, reference, alternative
             )
-            print(f"Population frequency data: {freq_data}")
+            print(f"gnomAD frequency data: {freq_data}")
         except Exception as e:
-            print(f"Error fetching population frequency: {e}")
+            print(f"Error fetching gnomAD frequency: {e}")
             freq_data = None
 
-    # 3. Calculate population-adjusted score
+        # Try 1000 Genomes as backup/supplement
+        if genomic_context_service:
+            try:
+                kg1000_data = genomic_context_service.get_1000genomes_frequency(
+                    chromosome, position, reference, alternative
+                )
+                if kg1000_data:
+                    print(
+                        f"1000 Genomes frequency data: African AF={kg1000_data.get('african_af'):.6f}"
+                    )
+
+                    # Merge with gnomAD data - prioritize direct measurements
+                    if (
+                        not freq_data
+                        or freq_data.get("error")
+                        or freq_data.get("african_af") is None
+                    ):
+                        freq_data = kg1000_data
+                    elif kg1000_data.get("african_af") and freq_data.get("african_af"):
+                        # Both sources have data - use average for more robust estimate
+                        combined_af = (
+                            freq_data["african_af"] + kg1000_data["african_af"]
+                        ) / 2
+                        freq_data["african_af_combined"] = combined_af
+                        freq_data["source"] = "gnomad+1000g"
+                        print(f"Combined African AF: {combined_af:.6f}")
+            except Exception as e:
+                print(f"Error fetching 1000 Genomes frequency: {e}")
+
+    # 4. Calculate population-adjusted score with genomic context
     adjusted_score, population_adjustment, adjustment_reasoning = (
-        calculate_population_adjustment(delta_score, freq_data, use_african_adjustment)
+        calculate_population_adjustment(
+            delta_score,
+            freq_data,
+            use_african_adjustment,
+            genomic_context=genomic_context,
+        )
     )
 
-    # 4. Classify with population-aware thresholds
+    # 5. Classify with population-aware thresholds and genomic context
     classification = classify_variant_with_population(
         adjusted_score,
         delta_score,
         freq_data,
         population_adjustment,
         adjustment_reasoning,
+        genomic_context=genomic_context,
     )
 
     result = {
@@ -559,13 +620,35 @@ def analyze_variant_with_population(
         "confidence": classification["confidence"],
         "classification_method": classification["method"],
         "population_context": classification["context"],
+        "frequency_context": classification.get("frequency_context"),
+        "location_context": classification.get("location_context"),
+        "clinical_interpretation": classification.get("clinical_interpretation"),
         "threshold_used": classification["threshold_used"],
+        "threshold_description": classification.get("threshold_description"),
         "use_african_adjustment": use_african_adjustment,
+        # Genomic context fields
+        "region_type": classification.get("region_type"),
+        "is_coding": classification.get("is_coding"),
+        "gene_symbol": classification.get("gene_symbol"),
+        "consequence_terms": genomic_context.get("consequence_terms")
+        if genomic_context
+        else None,
+        "impact": genomic_context.get("impact") if genomic_context else None,
+        # Data sources
+        "data_sources": {
+            "gnomad": freq_data is not None and not freq_data.get("error"),
+            "1000genomes": kg1000_data is not None,
+            "ensembl_vep": genomic_context is not None,
+        },
     }
 
     print(
         f"Analysis result: {classification['prediction']} (confidence: {classification['confidence']:.3f})"
     )
+    if genomic_context:
+        print(
+            f"Region: {genomic_context.get('region_type')}, Gene: {genomic_context.get('gene_symbol', 'N/A')}"
+        )
     if use_african_adjustment and freq_data and freq_data.get("african_af"):
         print(f"African population frequency: {freq_data['african_af']:.6f}")
         print(f"Population adjustment: {population_adjustment:+.6f}")
@@ -575,7 +658,11 @@ def analyze_variant_with_population(
 
 @app.cls(
     gpu="H100",
-    volumes={mount_path: volume, "/population_cache": population_volume},
+    volumes={
+        mount_path: volume,
+        "/population_cache": population_volume,
+        "/genomic_context_cache": context_volume,
+    },
     max_containers=3,
     retries=2,
     scaledown_window=120,
@@ -602,10 +689,14 @@ class Evo2Model:
                 print("Evo2 model loaded successfully")
 
                 # Initialize population frequency service
+                from genomic_context_service import GenomicContextService
                 from population_service import PopulationFrequencyService
 
                 self.population_service = PopulationFrequencyService()
                 print("Population frequency service initialized")
+
+                self.genomic_context_service = GenomicContextService()
+                print("Genomic context service initialized")
                 return
 
             except ImportError as e:
@@ -706,7 +797,7 @@ class Evo2Model:
         reference = window_seq[relative_pos]
         print("Reference is: " + reference)
 
-        # Analyze the variant with population-aware features
+        # Analyze the variant with enhanced population-aware features and genomic context
         if use_african_adjustment:
             result = analyze_variant_with_population(
                 relative_pos_in_window=relative_pos,
@@ -717,6 +808,7 @@ class Evo2Model:
                 chromosome=chromosome,
                 position=variant_position,
                 population_service=self.population_service,
+                genomic_context_service=self.genomic_context_service,
                 use_african_adjustment=use_african_adjustment,
             )
         else:
@@ -751,8 +843,9 @@ class Evo2Model:
 @app.local_entrypoint()
 def main():
     # Example of how you'd call the deployed Modal Function from your client
-    import requests
     import json  # brca1_example.remote()
+
+    import requests
 
     evo2Model = Evo2Model()
 
