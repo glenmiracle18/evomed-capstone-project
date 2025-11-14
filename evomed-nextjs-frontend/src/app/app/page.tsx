@@ -48,6 +48,7 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>("search");
+  const [activeExample, setActiveExample] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGenomes = async () => {
@@ -160,7 +161,22 @@ export default function HomePage() {
   const loadBRCA1Example = () => {
     setMode("search");
     setSearchQuery("BRCA1");
+    setActiveExample("BRCA1");
     performGeneSearch("BRCA1", selectedGenome);
+  };
+
+  const loadHBBExample = () => {
+    setMode("search");
+    setSearchQuery("HBB");
+    setActiveExample("HBB");
+    performGeneSearch("HBB", selectedGenome);
+  };
+
+  const loadG6PDExample = () => {
+    setMode("search");
+    setSearchQuery("G6PD");
+    setActiveExample("G6PD");
+    performGeneSearch("G6PD", selectedGenome);
   };
 
   const handleGeneSelect = (gene: GeneFromSearch) => {
@@ -256,15 +272,15 @@ export default function HomePage() {
             value={mode}
             onValueChange={(value) => switchMode(value as Mode)}
           >
-            <TabsList className="mb-4 bg-[#e9eeea]">
+            <TabsList className="bg-secondary mb-4">
               <TabsTrigger
-                className="data-[state=active]:bg-white data-[state=active]:text-[#3c4f3d]"
+                className="data-[state=active]:text-primary data-[state=active]:bg-white"
                 value="search"
               >
                 Search Genes
               </TabsTrigger>
               <TabsTrigger
-                className="data-[state=active]:bg-white data-[state=active]:text-[#3c4f3d]"
+                className="data-[state=active]:text-primary data-[state=active]:bg-white"
                 value="browse"
               >
                 Browse Chromosomes
@@ -296,13 +312,29 @@ export default function HomePage() {
                     </Button>
                   </div>
                 </form>
-                <Button
-                  variant="link"
-                  className="h-auto cursor-pointer p-0 text-[#de8246] hover:text-[#de8246]/80"
-                  onClick={loadBRCA1Example}
-                >
-                  Try BRCA1 example
-                </Button>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant="link"
+                    className={`h-auto cursor-pointer p-0 text-[#de8246] hover:text-[#de8246]/80 ${activeExample === "BRCA1" ? "underline decoration-2 underline-offset-4" : ""}`}
+                    onClick={loadBRCA1Example}
+                  >
+                    Try BRCA1 example
+                  </Button>
+                  <Button
+                    variant="link"
+                    className={`h-auto cursor-pointer p-0 text-[#de8246] hover:text-[#de8246]/80 ${activeExample === "HBB" ? "underline decoration-2 underline-offset-4" : ""}`}
+                    onClick={loadHBBExample}
+                  >
+                    Try HBB (Sickle Cell)
+                  </Button>
+                  <Button
+                    variant="link"
+                    className={`h-auto cursor-pointer p-0 text-[#de8246] hover:text-[#de8246]/80 ${activeExample === "G6PD" ? "underline decoration-2 underline-offset-4" : ""}`}
+                    onClick={loadG6PDExample}
+                  >
+                    Try G6PD (Deficiency)
+                  </Button>
+                </div>
               </div>
             </TabsContent>
 
@@ -314,7 +346,7 @@ export default function HomePage() {
                       key={chrom.name}
                       variant="outline"
                       size="sm"
-                      className={`h-8 cursor-pointer border-[#3c4f3d]/10 hover:bg-[#e9eeea] hover:text-[#3c4f3d] ${selectedChromosome === chrom.name ? "text[#3c4f3d] bg-[#e9eeea]" : ""}`}
+                      className={`hover:bg-accent hover:text-primary h-8 cursor-pointer border-[#3c4f3d]/10 ${selectedChromosome === chrom.name ? "text[#3c4f3d] bg-secondary" : ""}`}
                       onClick={() => setSelectedChromosome(chrom.name)}
                     >
                       {chrom.name}
@@ -369,20 +401,20 @@ export default function HomePage() {
               <div className="overflow-x-auto overflow-y-visible rounded-md border border-[#3c4f3d]/5">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-[#e9eeea]/50 hover:bg-[e9eeea]/70">
-                      <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
+                    <TableRow className="bg-secondary hover:bg-[e9eeea]/70">
+                      <TableHead className="text-primary text-xs font-normal">
                         <div className="flex items-center justify-between">
                           Symbol
                           <Tooltip content="Gene symbol - a short abbreviation that represents the gene (e.g., BRCA1, TP53)" />
                         </div>
                       </TableHead>
-                      <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
+                      <TableHead className="text-primary text-xs font-normal">
                         <div className="flex items-center justify-between">
                           Name
                           <Tooltip content="Full gene name - the complete descriptive name of the gene's function" />
                         </div>
                       </TableHead>
-                      <TableHead className="text-xs font-normal text-[#3c4f3d]/70">
+                      <TableHead className="text-primary text-xs font-normal">
                         <div className="flex items-center justify-between">
                           Location
                           <Tooltip content="Chromosomal location - shows which chromosome the gene is located on (e.g., chr17, chr1)" />
@@ -394,7 +426,7 @@ export default function HomePage() {
                     {searchResults.map((gene, index) => (
                       <TableRow
                         key={`${gene.symbol}-${index}`}
-                        className="cursor-pointer border-b border-[#3c4f3d]/5 hover:bg-[#e9eeea]/50"
+                        className="hover:bg-secondary/50 cursor-pointer border-b border-[#3c4f3d]/5"
                         onClick={() => handleGeneSelect(gene)}
                       >
                         <TableCell className="py-2 font-medium text-[#3c4f3d]">

@@ -76,6 +76,23 @@ export interface AnalysisResult {
   global_af?: number;
   cached?: boolean;
   source?: string;
+  // NEW: Enhanced context fields
+  frequency_context?: string;
+  location_context?: string;
+  clinical_interpretation?: string;
+  threshold_description?: string;
+  // NEW: Genomic context fields
+  region_type?: string;
+  is_coding?: boolean;
+  gene_symbol?: string;
+  consequence_terms?: string[];
+  impact?: string;
+  // NEW: Data sources
+  data_sources?: {
+    gnomad: boolean;
+    "1000genomes": boolean;
+    ensembl_vep: boolean;
+  };
 }
 
 export async function getAvailableGenomes() {

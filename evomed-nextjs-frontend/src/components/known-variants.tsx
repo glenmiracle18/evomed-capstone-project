@@ -212,7 +212,7 @@ export default function KnownVariants({
                             <Button
                               variant="outline"
                               size="sm"
-                              className="h-7 cursor-pointer border-[#3c4f3d]/20 bg-[#e9eeea] px-3 text-xs text-[#3c4f3d] hover:bg-[#3c4f3d]/10"
+                              className="border-primary/20 bg-secondary text-primary hover:bg-secondary/10 h-7 cursor-pointer px-3 text-xs"
                               disabled={variant.isAnalyzing}
                               onClick={() => analyzeVariant(variant)}
                             >

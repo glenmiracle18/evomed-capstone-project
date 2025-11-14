@@ -10,7 +10,7 @@ export default function AppLayout({
   return (
     <html lang="en">
       <body>
-        <div className="min-h-screen bg-[#e9eeea]">
+        <div className="bg-background min-h-screen">
           <header className="border-b border-[#3c4f3d]/10 bg-white">
             <div className="container mx-auto px-6 py-4">
               <div className="flex items-center justify-between">
@@ -28,7 +28,7 @@ export default function AppLayout({
                   <Link href="/app/docs">
                     <Button
                       variant="outline"
-                      className="cursor-pointer text-sm font-semibold text-[#3c4f3d]/70"
+                      className="bg-secondary cursor-pointer text-sm font-semibold text-[#3c4f3d]/70"
                       size="sm"
                     >
                       Docs

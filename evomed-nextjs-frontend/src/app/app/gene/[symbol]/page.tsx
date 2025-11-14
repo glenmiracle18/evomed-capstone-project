@@ -26,7 +26,7 @@ export default function GenePage() {
         setIsLoading(true);
         const data = await searchGenes(geneSymbol, genomeId);
         const foundGene = data.results.find(
-          (g) => g.symbol.toLowerCase() === geneSymbol.toLowerCase()
+          (g) => g.symbol.toLowerCase() === geneSymbol.toLowerCase(),
         );
 
         if (foundGene) {
@@ -92,11 +92,13 @@ export default function GenePage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#e9eeea]">
         <div className="text-center">
-          <h1 className="mb-4 text-2xl font-light text-[#3c4f3d]">Gene Not Found</h1>
+          <h1 className="mb-4 text-2xl font-light text-[#3c4f3d]">
+            Gene Not Found
+          </h1>
           <p className="mb-8 text-[#3c4f3d]/70">{error}</p>
           <button
             onClick={handleClose}
-            className="px-4 py-2 bg-[#3c4f3d] text-white rounded hover:bg-[#3c4f3d]/90"
+            className="rounded bg-[#3c4f3d] px-4 py-2 text-white hover:bg-[#3c4f3d]/90"
           >
             Back to Search
           </button>
@@ -107,25 +109,6 @@ export default function GenePage() {
 
   return (
     <div className="min-h-screen bg-[#e9eeea]">
-      <header className="border-b border-[#3c4f3d]/10 bg-white">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <h1 className="text-xl font-light tracking-wide text-[#3c4f3d]">
-                  <span className="font-normal">EvoMed</span>
-                </h1>
-                <div className="absolute -bottom-1 left-0 h-[2px] w-16 bg-[#de8246]"></div>
-              </div>
-              <span className="text-sm font-light text-[#3c4f3d]/70">
-                Variant Analysis
-              </span>
-            </div>
-            <UserButton />
-          </div>
-        </div>
-      </header>
-
       <main className="container mx-auto px-6 py-6">
         <GeneViewer gene={gene} genomeId={genomeId} onClose={handleClose} />
       </main>
