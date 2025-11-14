@@ -3,6 +3,11 @@
  * for Docker builds.
  */
 import "./src/env.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -16,6 +21,15 @@ const config = {
   // Disable ESLint checking during builds
   eslint: {
     ignoreDuringBuilds: true,
+  },
+
+  // Configure webpack to handle path aliases
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "~": path.resolve(__dirname, "src"),
+    };
+    return config;
   },
 
   // Configure headers for security and CORS
