@@ -106,10 +106,10 @@ export default function KnownVariants({
     }
   };
   return (
-    <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5">
+    <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5 dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-medium text-[#3c4f3d]">
+          <h3 className="text-base font-medium text-[#3c4f3d] dark:text-white">
             Known Variants from ClinVar
           </h3>
           <Tooltip content="ClinVar is a public database containing information about genetic variants and their clinical significance. These are known variants in this gene with classifications like pathogenic, benign, or uncertain significance from clinical studies." />
@@ -133,7 +133,7 @@ export default function KnownVariants({
         <div className="flex justify-center py-8">
           <div className="text-center">
             <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-[#3c4f3d]/30 border-t-[#de8246]"></div>
-            <p className="mt-3 text-sm text-[#3c4f3d]/70">
+            <p className="mt-3 text-sm text-[#3c4f3d]/70 dark:text-white/70">
               Loading variants...
             </p>
           </div>
@@ -143,14 +143,14 @@ export default function KnownVariants({
           {clinvarVariants.map((variant) => (
             <div
               key={variant.clinvar_id}
-              className="rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/20 p-4 transition-colors hover:border-[#3c4f3d]/20"
+              className="rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/20 dark:bg-[#1a1f1a]/30 p-4 transition-colors hover:border-[#3c4f3d]/20"
             >
               <div className="mb-3 flex items-start justify-between">
                 <div className="flex-1">
-                  <h4 className="text-sm font-medium text-[#3c4f3d]">
+                  <h4 className="text-sm font-medium text-[#3c4f3d] dark:text-white">
                     {variant.title}
                   </h4>
-                  <div className="mt-1 flex items-center gap-2 text-xs text-[#3c4f3d]/60">
+                  <div className="mt-1 flex items-center gap-2 text-xs text-[#3c4f3d]/60 dark:text-white/60">
                     <span>Location: {variant.location}</span>
                     <span>•</span>
                     <button
@@ -171,16 +171,16 @@ export default function KnownVariants({
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
-                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 dark:text-white/70 uppercase">
                     Type
                   </div>
-                  <div className="text-sm text-[#3c4f3d]">
+                  <div className="text-sm text-[#3c4f3d] dark:text-white">
                     {variant.variation_type}
                   </div>
                 </div>
 
                 <div>
-                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 dark:text-white/70 uppercase">
                     Clinical Significance
                   </div>
                   <div
@@ -242,7 +242,7 @@ export default function KnownVariants({
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#e9eeea]">
             <Search className="h-6 w-6 text-[#3c4f3d]/30" />
           </div>
-          <p className="text-sm text-[#3c4f3d]/60">
+          <p className="text-sm text-[#3c4f3d]/60 dark:text-white/60">
             No ClinVar variants found for this gene
           </p>
         </div>

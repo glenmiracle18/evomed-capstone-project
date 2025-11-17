@@ -24,6 +24,7 @@ import { Button } from "./ui/button";
 import { match } from "node:assert";
 import { Zap, Globe, Info, HelpCircle } from "lucide-react";
 import { Tooltip } from "./ui/tooltip";
+import { PathogenicityChart } from "./pathogenicity-chart";
 
 export interface VariantAnalysisHandle {
   focusAlternativeInput: () => void;
@@ -122,13 +123,13 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
     };
 
     return (
-      <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5">
+      <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5 dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h3 className="text-base font-medium text-[#3c4f3d]">
+            <h3 className="text-base font-medium text-[#3c4f3d] dark:text-white">
               Variant Analysis
             </h3>
-            <p className="mt-1 text-xs text-[#3c4f3d]/60">
+            <p className="mt-1 text-xs text-[#3c4f3d]/60 dark:text-white/60">
               Predict the impact of genetic variants using the Evo2 deep
               learning model
             </p>
@@ -137,11 +138,11 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
         </div>
 
         {/* African Population Adjustment Toggle */}
-        <div className="mb-5 rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/30 p-4">
+        <div className="mb-5 rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/30 dark:bg-[#1a1f1a]/50 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4 text-[#3c4f3d]" />
-              <label className="text-sm font-medium text-[#3c4f3d]">
+              <Globe className="h-4 w-4 text-[#3c4f3d] dark:text-white" />
+              <label className="text-sm font-medium text-[#3c4f3d] dark:text-white">
                 African Population Adjustment
               </label>
               <Tooltip content="Uses gnomAD African population frequencies to reduce false positives for variants common in African populations" />
@@ -164,7 +165,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
               />
             </button>
           </div>
-          <p className="mt-2 text-xs text-[#3c4f3d]/60">
+          <p className="mt-2 text-xs text-[#3c4f3d]/60 dark:text-white/60">
             {useAfricanAdjustment
               ? "Enabled: Adjusts predictions based on African population frequencies to reduce health disparities"
               : "Disabled: Uses standard Evo2 analysis without population-specific adjustments"}
@@ -175,7 +176,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
         <div className="mb-5">
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+              <label className="mb-1.5 block text-xs font-medium tracking-wider text-[#3c4f3d]/70 dark:text-white/70 uppercase">
                 Position
               </label>
               <Input
@@ -185,7 +186,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+              <label className="mb-1.5 block text-xs font-medium tracking-wider text-[#3c4f3d]/70 dark:text-white/70 uppercase">
                 Alternative (variant)
               </label>
               <Input
@@ -202,8 +203,8 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
           </div>
 
           {variantReference && (
-            <div className="mt-3 flex items-center gap-2 text-sm text-[#3c4f3d]">
-              <span className="text-xs text-[#3c4f3d]/60">Substitution:</span>
+            <div className="mt-3 flex items-center gap-2 text-sm text-[#3c4f3d] dark:text-white">
+              <span className="text-xs text-[#3c4f3d]/60 dark:text-white/60">Substitution:</span>
               <span
                 className={`font-medium ${getNucleotideColorClass(variantReference)}`}
               >
@@ -264,7 +265,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
               return (
                 <div
                   key={matchedVariant.clinvar_id}
-                  className="border-priamry/10 mt-4 rounded-md border bg-[#e9eeea]/30 p-4"
+                  className="border-priamry/10 mt-4 rounded-md border bg-[#e9eeea]/30 dark:bg-[#1a1f1a]/50 p-4"
                 >
                   <div className="mb-3 flex items-center justify-between">
                     <h4 className="text-priamry text-sm font-medium">
@@ -341,8 +342,13 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
 
         {variantResult && (
           <div className="mt-6 space-y-4">
+            {/* Animated Visualization */}
+            <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5 dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
+              <PathogenicityChart result={variantResult} />
+            </div>
+
             {/* Main Result Card */}
-            <div className="border-priamry/10 rounded-lg border bg-[#e9eeea]/30 p-4">
+            <div className="border-priamry/10 rounded-lg border bg-[#e9eeea]/30 dark:bg-[#1a1f1a]/50 p-4">
               <div className="mb-3 flex items-center justify-between">
                 <h4 className="text-priamry text-sm font-medium">
                   Analysis Result
@@ -497,7 +503,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
             {variantResult.location_context && (
               <div className="rounded-lg border border-[#3c4f3d]/20 bg-[#3c4f3d]/5 p-4">
                 <div className="mb-3 flex items-center gap-2">
-                  <Info className="h-4 w-4 text-[#3c4f3d]" />
+                  <Info className="h-4 w-4 text-[#3c4f3d] dark:text-white" />
                   <h5 className="text-priamry text-sm font-medium">
                     Genomic Location & Context
                   </h5>
@@ -574,7 +580,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
                               (term, idx) => (
                                 <span
                                   key={idx}
-                                  className="inline-block rounded bg-[#e9eeea] px-2 py-0.5 text-xs text-[#3c4f3d]"
+                                  className="inline-block rounded bg-[#e9eeea] px-2 py-0.5 text-xs text-[#3c4f3d] dark:text-white"
                                 >
                                   {term.replace(/_/g, " ")}
                                 </span>
@@ -716,7 +722,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
             {variantResult.clinical_interpretation && (
               <div className="rounded-lg border border-[#3c4f3d]/20 bg-white p-4">
                 <div className="mb-2 flex items-center gap-2">
-                  <HelpCircle className="h-4 w-4 text-[#3c4f3d]" />
+                  <HelpCircle className="h-4 w-4 text-[#3c4f3d] dark:text-white" />
                   <h5 className="text-priamry text-sm font-medium">
                     Clinical Interpretation
                   </h5>

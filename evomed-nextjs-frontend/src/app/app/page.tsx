@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
+import { ChromosomeMap } from "~/components/chromosome-map";
 import {
   Select,
   SelectContent,
@@ -216,12 +217,12 @@ export default function HomePage() {
   return (
     <div className="flex h-screen">
       {/* Left Panel - Controls */}
-      <div className="w-[420px] border-r border-[#3c4f3d]/10 bg-white p-6">
+      <div className="w-[420px] border-r border-[#3c4f3d]/10 bg-white p-6 dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
         <div className="mb-8">
-          <h2 className="mb-1 text-xl font-medium text-[#3c4f3d]">
+          <h2 className="mb-1 text-xl font-medium text-[#3c4f3d] dark:text-white">
             Variant Analysis
           </h2>
-          <p className="text-sm text-[#3c4f3d]/60">
+          <p className="text-sm text-[#3c4f3d]/60 dark:text-white/60">
             Search and analyze genetic variants
           </p>
         </div>
@@ -229,7 +230,7 @@ export default function HomePage() {
         {/* Genome Assembly Selector - Compact Pills */}
         <div className="mb-8">
           <div className="mb-3 flex items-center justify-between">
-            <label className="text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+            <label className="text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase dark:text-white/70">
               Genome Assembly
             </label>
             <Tooltip content="A genome assembly is a computational representation of a genome sequence. Different assemblies (like hg38, hg19) represent different versions of the human genome reference with varying levels of completeness and accuracy." />
@@ -239,7 +240,7 @@ export default function HomePage() {
             onValueChange={handleGenomeChange}
             disabled={isLoading}
           >
-            <SelectTrigger className="h-10 w-full border border-[#3c4f3d]/20 bg-white">
+            <SelectTrigger className="h-10 w-full border border-[#3c4f3d]/20 bg-white dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70">
               <SelectValue placeholder="Select genome assembly" />
             </SelectTrigger>
             <SelectContent>
@@ -252,7 +253,7 @@ export default function HomePage() {
             </SelectContent>
           </Select>
           {selectedGenome && (
-            <p className="mt-2 text-xs text-[#3c4f3d]/50">
+            <p className="mt-2 text-xs text-[#3c4f3d]/50 dark:text-white/50">
               {
                 genomes.find((genome) => genome.id === selectedGenome)
                   ?.sourceName
@@ -264,7 +265,7 @@ export default function HomePage() {
         {/* Mode Switcher */}
         <div className="mb-6">
           <div className="mb-3 flex items-center justify-between">
-            <label className="text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+            <label className="text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase dark:text-white/70">
               Search Method
             </label>
             <Tooltip content="Search for specific genes by name or symbol, or browse genes by chromosome. Use the search function to find genes like BRCA1, or browse chromosomes to see all genes in a specific region." />
@@ -275,7 +276,7 @@ export default function HomePage() {
               className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
                 mode === "search"
                   ? "border-[#de8246] bg-[#de8246] text-white"
-                  : "border-[#3c4f3d]/20 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/30"
+                  : "border-[#3c4f3d]/20 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/30 dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70"
               }`}
             >
               Search Genes
@@ -285,7 +286,7 @@ export default function HomePage() {
               className={`flex-1 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
                 mode === "browse"
                   ? "border-[#de8246] bg-[#de8246] text-white"
-                  : "border-[#3c4f3d]/20 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/30"
+                  : "border-[#3c4f3d]/20 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/30 dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70"
               }`}
             >
               Browse Chromosomes
@@ -297,7 +298,7 @@ export default function HomePage() {
         {mode === "search" && (
           <div className="mb-6">
             <div className="mb-3">
-              <label className="text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+              <label className="text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase dark:text-white/70">
                 Gene Search
               </label>
             </div>
@@ -308,7 +309,7 @@ export default function HomePage() {
                   placeholder="Enter gene symbol or name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-11 border-[#3c4f3d]/20 pr-11"
+                  className="h-11 border-[#3c4f3d]/20 pr-11 dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70"
                 />
                 <Button
                   type="submit"
@@ -323,14 +324,16 @@ export default function HomePage() {
 
             {/* Quick Examples */}
             <div className="mt-4 space-y-2">
-              <p className="text-xs text-[#3c4f3d]/50">Quick examples:</p>
+              <p className="text-xs text-[#3c4f3d]/50 dark:text-white/50">
+                Quick examples:
+              </p>
               <div className="flex flex-col gap-2">
                 <button
                   onClick={loadBRCA1Example}
                   className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                     activeExample === "BRCA1"
                       ? "border-[#de8246] bg-[#de8246]/5 text-[#de8246]"
-                      : "border-[#3c4f3d]/10 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/20"
+                      : "border-[#3c4f3d]/10 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/20 dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70"
                   }`}
                 >
                   BRCA1
@@ -340,7 +343,7 @@ export default function HomePage() {
                   className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                     activeExample === "HBB"
                       ? "border-[#de8246] bg-[#de8246]/5 text-[#de8246]"
-                      : "border-[#3c4f3d]/10 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/20"
+                      : "border-[#3c4f3d]/10 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/20 dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70"
                   }`}
                 >
                   HBB <span className="text-xs opacity-60">(Sickle Cell)</span>
@@ -350,7 +353,7 @@ export default function HomePage() {
                   className={`rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                     activeExample === "G6PD"
                       ? "border-[#de8246] bg-[#de8246]/5 text-[#de8246]"
-                      : "border-[#3c4f3d]/10 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/20"
+                      : "border-[#3c4f3d]/10 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/20 dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70"
                   }`}
                 >
                   G6PD <span className="text-xs opacity-60">(Deficiency)</span>
@@ -363,26 +366,11 @@ export default function HomePage() {
         {/* Browse Mode */}
         {mode === "browse" && (
           <div className="mb-6">
-            <div className="mb-3">
-              <label className="text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
-                Select Chromosome
-              </label>
-            </div>
-            <div className="grid max-h-[400px] grid-cols-4 gap-2 overflow-y-auto pr-1">
-              {chromosomes.map((chrom) => (
-                <button
-                  key={chrom.name}
-                  onClick={() => setSelectedChromosome(chrom.name)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
-                    selectedChromosome === chrom.name
-                      ? "border-[#de8246] bg-[#de8246] text-white"
-                      : "border-[#3c4f3d]/20 bg-white text-[#3c4f3d]/70 hover:border-[#3c4f3d]/30"
-                  }`}
-                >
-                  {chrom.name.replace("chr", "")}
-                </button>
-              ))}
-            </div>
+            <ChromosomeMap
+              chromosomes={chromosomes}
+              selectedChromosome={selectedChromosome}
+              onSelectChromosome={setSelectedChromosome}
+            />
           </div>
         )}
 
@@ -394,12 +382,14 @@ export default function HomePage() {
       </div>
 
       {/* Right Panel - Results */}
-      <div className="flex-1 overflow-y-auto bg-[#e9eeea] p-6">
+      <div className="flex-1 overflow-y-auto bg-[#e9eeea] p-6 dark:bg-[#1a1f1a]">
         {isLoading && (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
               <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#3c4f3d]/30 border-t-[#de8246]"></div>
-              <p className="mt-4 text-sm text-[#3c4f3d]/70">Loading genes...</p>
+              <p className="mt-4 text-sm text-[#3c4f3d]/70 dark:text-white/70">
+                Loading genes...
+              </p>
             </div>
           </div>
         )}
@@ -407,13 +397,13 @@ export default function HomePage() {
         {!isLoading && !error && searchResults.length === 0 && (
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white">
-                <Search className="h-8 w-8 text-[#3c4f3d]/30" />
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-[#242924]">
+                <Search className="h-8 w-8 text-[#3c4f3d]/30 dark:text-white/30" />
               </div>
-              <h3 className="mb-2 text-lg font-medium text-[#3c4f3d]">
+              <h3 className="mb-2 text-lg font-medium text-[#3c4f3d] dark:text-white">
                 {mode === "search" ? "Search for genes" : "Select a chromosome"}
               </h3>
-              <p className="text-sm text-[#3c4f3d]/60">
+              <p className="text-sm text-[#3c4f3d]/60 dark:text-white/60">
                 {mode === "search"
                   ? "Enter a gene symbol or name to get started"
                   : "Choose a chromosome to browse available genes"}
@@ -426,12 +416,12 @@ export default function HomePage() {
           <div>
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-medium text-[#3c4f3d]">
+                <h3 className="text-lg font-medium text-[#3c4f3d] dark:text-white">
                   {mode === "search"
                     ? "Search Results"
                     : `Chromosome ${selectedChromosome}`}
                 </h3>
-                <p className="text-sm text-[#3c4f3d]/60">
+                <p className="text-sm text-[#3c4f3d]/60 dark:text-white/60">
                   {searchResults.length}{" "}
                   {searchResults.length === 1 ? "gene" : "genes"} found
                 </p>
@@ -450,19 +440,21 @@ export default function HomePage() {
                 <div
                   key={`${gene.symbol}-${index}`}
                   onClick={() => handleGeneSelect(gene)}
-                  className="cursor-pointer rounded-lg border border-[#3c4f3d]/10 bg-white p-4 transition-all hover:border-[#de8246] hover:bg-white"
+                  className="cursor-pointer rounded-lg border border-[#3c4f3d]/10 bg-white p-4 transition-all hover:border-[#de8246] hover:bg-white dark:border-[#3c4f3d]/20 dark:bg-[#242924] dark:hover:border-[#de8246]"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
-                        <h4 className="font-medium text-[#3c4f3d]">
+                        <h4 className="font-medium text-[#3c4f3d] dark:text-white">
                           {gene.symbol}
                         </h4>
-                        <span className="rounded-full bg-[#e9eeea] px-2 py-0.5 text-xs font-medium text-[#3c4f3d]/70">
+                        <span className="rounded-full bg-[#e9eeea] px-2 py-0.5 text-xs font-medium text-[#3c4f3d]/70 dark:bg-[#1a1f1a] dark:text-white/70">
                           {gene.chrom}
                         </span>
                       </div>
-                      <p className="text-sm text-[#3c4f3d]/60">{gene.name}</p>
+                      <p className="text-sm text-[#3c4f3d]/60 dark:text-white/60">
+                        {gene.name}
+                      </p>
                     </div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -474,7 +466,7 @@ export default function HomePage() {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="text-[#3c4f3d]/30"
+                      className="text-[#3c4f3d]/30 dark:text-white/30"
                     >
                       <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>

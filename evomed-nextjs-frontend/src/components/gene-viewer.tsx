@@ -230,18 +230,22 @@ export default function GeneViewer({
       <div className="mb-6">
         <button
           onClick={onClose}
-          className="mb-4 flex items-center gap-2 text-sm text-[#3c4f3d]/70 transition-colors hover:text-[#3c4f3d]"
+          className="mb-4 flex items-center gap-2 text-sm text-[#3c4f3d]/70 transition-colors hover:text-[#3c4f3d] dark:text-white/70 dark:hover:text-white"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to results
         </button>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-medium text-[#3c4f3d]">{gene.symbol}</h1>
-          <span className="rounded-full bg-white px-3 py-1 text-sm text-[#3c4f3d]/70">
+          <h1 className="text-2xl font-medium text-[#3c4f3d] dark:text-white">
+            {gene.symbol}
+          </h1>
+          <span className="rounded-full bg-white px-3 py-1 text-sm text-[#3c4f3d]/70 dark:bg-[#242924] dark:text-white/70">
             {gene.chrom}
           </span>
         </div>
-        <p className="mt-1 text-sm text-[#3c4f3d]/60">{gene.name}</p>
+        <p className="mt-1 text-sm text-[#3c4f3d]/60 dark:text-white/60">
+          {gene.name}
+        </p>
       </div>
 
       {/* Main Content Grid */}

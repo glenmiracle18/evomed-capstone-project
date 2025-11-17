@@ -265,10 +265,10 @@ export function GeneSequence({
   }, [sequenceData, sequenceRange, onSequenceClick]);
 
   return (
-    <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5">
+    <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5 dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-medium text-[#3c4f3d]">
+          <h3 className="text-base font-medium text-[#3c4f3d] dark:text-white">
             Gene Sequence
           </h3>
           <Tooltip content="View the DNA sequence of this gene region. Enter genomic coordinates to load a specific sequence range. Click on any nucleotide to select it for variant analysis. The sequence shows the reference genome nucleotides (A, T, G, C) at each position." />
@@ -277,16 +277,16 @@ export function GeneSequence({
       {geneBounds && (
         <div className="mb-4 flex flex-col">
           <div className="mb-2 flex flex-col items-center justify-between text-xs sm:flex-row">
-            <span className="flex items-center gap-1 text-[#3c4f3d]/70">
+            <span className="flex items-center gap-1 text-[#3c4f3d]/70 dark:text-white/70">
               <p className="sm:hidden">From: </p>
               <p>{Math.min(geneBounds.min, geneBounds.max).toLocaleString()}</p>
             </span>
-            <span className="text-[#3c4f3d]/70">
+            <span className="text-[#3c4f3d]/70 dark:text-white/70">
               Selected: {parseInt(startPosition || "0").toLocaleString()} -{" "}
               {parseInt(endPosition || "0").toLocaleString()} (
               {currentRangeSize.toLocaleString()} bp)
             </span>
-            <span className="flex items-center gap-1 text-[#3c4f3d]/70">
+            <span className="flex items-center gap-1 text-[#3c4f3d]/70 dark:text-white/70">
               <p className="sm:hidden">To: </p>
               <p>{Math.max(geneBounds.min, geneBounds.max).toLocaleString()}</p>
             </span>
@@ -335,7 +335,9 @@ export function GeneSequence({
             {/* Position controls */}
             <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[#3c4f3d]/70">Start:</span>
+                <span className="text-xs text-[#3c4f3d]/70 dark:text-white/70">
+                  Start:
+                </span>
                 <Input
                   value={startPosition}
                   onChange={(e) => onStartPositionChange(e.target.value)}
@@ -354,7 +356,9 @@ export function GeneSequence({
                 {isLoading ? "Loading..." : "Load sequence"}
               </Button>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[#3c4f3d]/70">End:</span>
+                <span className="text-xs text-[#3c4f3d]/70 dark:text-white/70">
+                  End:
+                </span>
                 <Input
                   value={endPosition}
                   onChange={(e) => onEndPositionChange(e.target.value)}
@@ -370,14 +374,14 @@ export function GeneSequence({
       )}
 
       <div className="mb-2 flex items-center justify-between text-xs">
-        <span className="text-[#3c4f3d]/70">
+        <span className="text-[#3c4f3d]/70 dark:text-white/70">
           {geneDetail?.genomicinfo?.[0]?.strand === "+"
             ? "Forward strand (5' -> 3')"
             : geneDetail?.genomicinfo?.[0]?.strand === "-"
               ? "Reverse strand (3' <- 5')"
               : "Strand information not available"}
         </span>
-        <span className="text-[#3c4f3d]/70">
+        <span className="text-[#3c4f3d]/70 dark:text-white/70">
           Maximum window size: {maxViewRange.toLocaleString()} bp
         </span>
       </div>
@@ -388,7 +392,7 @@ export function GeneSequence({
         </div>
       )}
 
-      <div className="w-full rounded-md bg-[#e9eeea]/50 p-3">
+      <div className="w-full rounded-md bg-[#e9eeea]/50 p-3 dark:bg-[#1a1f1a]/80">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-[#3c4f3d]"></div>
@@ -400,7 +404,7 @@ export function GeneSequence({
             </pre>
           </div>
         ) : (
-          <p className="text-center text-sm text-[#3c4f3d]/60">
+          <p className="text-center text-sm text-[#3c4f3d]/60 dark:text-white/60">
             {error ? "Error loading sequence" : "No sequence data loaded."}
           </p>
         )}

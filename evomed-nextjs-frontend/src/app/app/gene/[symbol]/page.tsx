@@ -108,7 +108,7 @@ export default function GenePage() {
   }
 
   return (
-    <div className="h-screen overflow-y-auto bg-[#e9eeea]">
+    <div className="h-screen overflow-y-auto bg-[#e9eeea] dark:bg-[#1a1f1a]">
       <GeneViewer gene={gene} genomeId={genomeId} onClose={handleClose} />
     </div>
   );
