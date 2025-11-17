@@ -17,6 +17,7 @@ lerna-debug.log*
 *.swo
 *.swn
 *~
+/evomed-lightweight-model/venv
 
 # Editor directories and files
 .vscode/*
