@@ -224,7 +224,7 @@ def main():
     # Download datasets
     results = {
         "BRCA Exchange": download_brca_exchange(),
-        "ClinVar": download_clinvar(),
+        # "ClinVar": download_clinvar(),  # Skipping ClinVar - using BRCA Exchange only
         "Reference Sequence": download_reference_sequence(),
     }
 
