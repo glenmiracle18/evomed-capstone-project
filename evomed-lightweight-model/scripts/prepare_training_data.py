@@ -31,55 +31,17 @@ np.random.seed(RANDOM_SEED)
 
 
 def load_datasets():
-    """Load BRCA1 saturation mutagenesis dataset (Findlay et al. 2018)"""
-    print("\n📂 Loading BRCA1 saturation mutagenesis dataset...")
+    """Load all variants from BRCA Exchange API"""
+    print("\n📂 Loading variants from BRCA Exchange API...")
+    api = BRCAExchangeAPI()
+    variants_df = api.fetch_all_variants(gene_symbol=TARGET_GENE)
 
-    dataset_path = DATA_DIR / "41586_2018_461_MOESM3_ESM.xlsx"
-
-    if not dataset_path.exists():
-        print(f"   ❌ Dataset not found: {dataset_path}")
-        print(
-            f"   Please download from: https://www.nature.com/articles/s41586-018-0461-z"
-        )
+    if variants_df.empty:
+        print(f"   ❌ No variants found for {TARGET_GENE}")
         return {}
 
-    # Load Excel file (header is on row 2)
-    df = pd.read_excel(dataset_path, header=2)
-
-    print(f"   ✅ Loaded {len(df):,} variants from Findlay et al. 2018")
-
-    # Clean and standardize column names
-    df = df[
-        [
-            "chromosome",
-            "position (hg19)",
-            "reference",
-            "alt",
-            "function.score.mean",
-            "func.class",
-        ]
-    ].copy()
-
-    df.rename(
-        columns={
-            "chromosome": "chrom",
-            "position (hg19)": "pos",
-            "reference": "ref",
-            "function.score.mean": "func_score",
-            "func.class": "func_class",
-        },
-        inplace=True,
-    )
-
-    # Show class distribution
-    class_counts = df["func_class"].value_counts()
-    print(f"   Functional classes:")
-    for cls, count in class_counts.items():
-        print(f"      {cls}: {count:,} ({count / len(df) * 100:.1f}%)")
-
-    dfs = {"brca1_findlay": df}
-
-    return dfs
+    print(f"   ✅ Loaded {len(variants_df):,} variants from BRCA Exchange")
+    return {"brca_exchange": variants_df}
 
 
 def parse_clinical_significance(sig_str: str) -> int:
@@ -107,9 +69,9 @@ def parse_clinical_significance(sig_str: str) -> int:
     return -1
 
 
-def process_findlay_dataset(df: pd.DataFrame) -> pd.DataFrame:
-    """Process Findlay et al. 2018 BRCA1 saturation mutagenesis dataset"""
-    print("\n🔄 Processing Findlay BRCA1 dataset...")
+def process_brca_exchange_dataset(df: pd.DataFrame) -> pd.DataFrame:
+    """Process BRCA Exchange dataset"""
+    print("\n🔄 Processing BRCA Exchange dataset...")
 
     # Key columns
     processed = pd.DataFrame()
@@ -359,7 +321,9 @@ def main():
     processed_dfs = {}
 
     if "brca_exchange" in raw_dfs:
-        processed_dfs["brca_exchange"] = process_brca_exchange(raw_dfs["brca_exchange"])
+        processed_dfs["brca_exchange"] = process_brca_exchange_dataset(
+            raw_dfs["brca_exchange"]
+        )
 
     if "clinvar" in raw_dfs:
         processed_dfs["clinvar"] = process_clinvar(raw_dfs["clinvar"])
