@@ -225,63 +225,80 @@ export default function GeneViewer({
   }
 
   return (
-    <div className="space-y-6">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="cursor-pointer text-[#3c4f3d] hover:bg-[#e9eeea]/70"
-        onClick={onClose}
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to results
-      </Button>
+    <div className="p-6">
+      {/* Back Button & Header */}
+      <div className="mb-6">
+        <button
+          onClick={onClose}
+          className="mb-4 flex items-center gap-2 text-sm text-[#3c4f3d]/70 transition-colors hover:text-[#3c4f3d]"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to results
+        </button>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-medium text-[#3c4f3d]">{gene.symbol}</h1>
+          <span className="rounded-full bg-white px-3 py-1 text-sm text-[#3c4f3d]/70">
+            {gene.chrom}
+          </span>
+        </div>
+        <p className="mt-1 text-sm text-[#3c4f3d]/60">{gene.name}</p>
+      </div>
 
-      <VariantAnalysis
-        ref={variantAnalysisRef}
-        gene={gene}
-        genomeId={genomeId}
-        chromosome={gene.chrom}
-        clinvarVariants={clinvarVariants}
-        referenceSequence={activeReferenceNucleotide}
-        sequencePosition={activeSequencePosition}
-        geneBounds={geneBounds}
-        useAfricanAdjustment={useAfricanAdjustment}
-        onUseAfricanAdjustmentChange={setUseAfricanAdjustment}
-      />
+      {/* Main Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Left Column */}
+        <div className="space-y-6">
+          <VariantAnalysis
+            ref={variantAnalysisRef}
+            gene={gene}
+            genomeId={genomeId}
+            chromosome={gene.chrom}
+            clinvarVariants={clinvarVariants}
+            referenceSequence={activeReferenceNucleotide}
+            sequencePosition={activeSequencePosition}
+            geneBounds={geneBounds}
+            useAfricanAdjustment={useAfricanAdjustment}
+            onUseAfricanAdjustmentChange={setUseAfricanAdjustment}
+          />
 
-      <KnownVariants
-        refreshVariants={fetchClinvarVariants}
-        showComparison={showComparison}
-        updateClinvarVariant={updateClinvarVariant}
-        clinvarVariants={clinvarVariants}
-        isLoadingClinvar={isLoadingClinvar}
-        clinvarError={clinvarError}
-        genomeId={genomeId}
-        gene={gene}
-        useAfricanAdjustment={useAfricanAdjustment}
-      />
+          <GeneInformation
+            gene={gene}
+            geneDetail={geneDetail}
+            geneBounds={geneBounds}
+          />
+        </div>
 
-      <GeneSequence
-        geneBounds={geneBounds}
-        geneDetail={geneDetail}
-        startPosition={startPosition}
-        endPosition={endPosition}
-        onStartPositionChange={setStartPosition}
-        onEndPositionChange={setEndPosition}
-        sequenceData={geneSequence}
-        sequenceRange={actualRange}
-        isLoading={isLoadingSequence}
-        error={error}
-        onSequenceLoadRequest={handleLoadSequence}
-        onSequenceClick={handleSequenceClick}
-        maxViewRange={10000}
-      />
+        {/* Right Column */}
+        <div className="space-y-6">
+          <KnownVariants
+            refreshVariants={fetchClinvarVariants}
+            showComparison={showComparison}
+            updateClinvarVariant={updateClinvarVariant}
+            clinvarVariants={clinvarVariants}
+            isLoadingClinvar={isLoadingClinvar}
+            clinvarError={clinvarError}
+            genomeId={genomeId}
+            gene={gene}
+            useAfricanAdjustment={useAfricanAdjustment}
+          />
 
-      <GeneInformation
-        gene={gene}
-        geneDetail={geneDetail}
-        geneBounds={geneBounds}
-      />
+          <GeneSequence
+            geneBounds={geneBounds}
+            geneDetail={geneDetail}
+            startPosition={startPosition}
+            endPosition={endPosition}
+            onStartPositionChange={setStartPosition}
+            onEndPositionChange={setEndPosition}
+            sequenceData={geneSequence}
+            sequenceRange={actualRange}
+            isLoading={isLoadingSequence}
+            error={error}
+            onSequenceLoadRequest={handleLoadSequence}
+            onSequenceClick={handleSequenceClick}
+            maxViewRange={10000}
+          />
+        </div>
+      </div>
 
       <VariantComparisonModal
         comparisonVariant={comparisonVariant}

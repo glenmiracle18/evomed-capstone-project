@@ -106,156 +106,147 @@ export default function KnownVariants({
     }
   };
   return (
-    <Card className="gap-0 border-none bg-white py-0 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between pt-4 pb-2">
+    <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
-            Known Variants in Gene from ClinVar
-          </CardTitle>
+          <h3 className="text-base font-medium text-[#3c4f3d]">
+            Known Variants from ClinVar
+          </h3>
           <Tooltip content="ClinVar is a public database containing information about genetic variants and their clinical significance. These are known variants in this gene with classifications like pathogenic, benign, or uncertain significance from clinical studies." />
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={refreshVariants}
           disabled={isLoadingClinvar}
-          className="h-7 cursor-pointer text-xs text-[#3c4f3d] hover:bg-[#e9eeea]/70"
+          className="flex items-center gap-1.5 rounded-lg border border-[#3c4f3d]/20 bg-white px-3 py-1.5 text-sm text-[#3c4f3d] transition-colors hover:bg-[#e9eeea]/50 disabled:opacity-50"
         >
-          <RefreshCw className="mr-1 h-3 w-3" />
+          <RefreshCw className="h-3.5 w-3.5" />
           Refresh
-        </Button>
-      </CardHeader>
-      <CardContent className="pb-4">
-        {clinvarError && (
-          <div className="mb-4 rounded-md bg-red-50 p-3 text-xs text-red-600">
-            {clinvarError}
-          </div>
-        )}
+        </button>
+      </div>
+      {clinvarError && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {clinvarError}
+        </div>
+      )}
 
-        {isLoadingClinvar ? (
-          <div className="flex justify-center py-6">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#3c4f3d]/30 border-t-[#3c4f3d]"></div>
-          </div>
-        ) : clinvarVariants.length > 0 ? (
-          <div className="h-96 max-h-96 overflow-y-scroll rounded-md border border-[#3c4f3d]/5">
-            <Table>
-              <TableHeader className="sticky top-0 z-10">
-                <TableRow className="bg-[#e9eeea]/80 hover:bg-[#e9eeea]/30">
-                  <TableHead className="py-2 text-xs font-medium text-[#3c4f3d]">
-                    Variant
-                  </TableHead>
-                  <TableHead className="py-2 text-xs font-medium text-[#3c4f3d]">
-                    Type
-                  </TableHead>
-                  <TableHead className="py-2 text-xs font-medium text-[#3c4f3d]">
-                    Clinical Significance
-                  </TableHead>
-                  <TableHead className="py-2 text-xs font-medium text-[#3c4f3d]">
-                    Actions
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {clinvarVariants.map((variant) => (
-                  <TableRow
-                    key={variant.clinvar_id}
-                    className="border-b border-[#3c4f3d]/5"
-                  >
-                    <TableCell className="py-2">
-                      <div className="text-xs font-medium text-[#3c4f3d]">
-                        {variant.title}
-                      </div>
-                      <div className="mt-1 flex items-center gap-1 text-xs text-[#3c4f3d]/70">
-                        <p>Location: {variant.location}</p>
-                        <Button
-                          variant="link"
-                          size="sm"
-                          className="h-6 cursor-pointer px-0 text-xs text-[#de8246] hover:text-[#de8246]/80"
-                          onClick={() =>
-                            window.open(
-                              `https://www.ncbi.nlm.nih.gov/clinvar/variation/${variant.clinvar_id}`,
-                              "_blank",
-                            )
-                          }
-                        >
-                          View in ClinVar
-                          <ExternalLink className="ml-1 inline-block h-2 w-2" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-2 text-xs">
-                      {variant.variation_type}
-                    </TableCell>
-                    <TableCell className="py-2 text-xs">
-                      <div
-                        className={`w-fit rounded-md px-2 py-1 text-center font-normal ${getClassificationColorClasses(variant.classification)}`}
-                      >
-                        {variant.classification || "Unknown"}
-                      </div>
-                      {variant.evo2Result && (
-                        <div className="mt-2">
-                          <div
-                            className={`flex w-fit items-center gap-1 rounded-md px-2 py-1 text-center ${getClassificationColorClasses(variant.evo2Result.prediction)}`}
-                          >
-                            <Shield className="h-3 w-3" />
-                            <span>Evo2: {variant.evo2Result.prediction}</span>
-                          </div>
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell className="py-2 text-xs">
-                      <div className="flex flex-col items-end gap-1">
-                        {variant.variation_type
-                          .toLowerCase()
-                          .includes("single nucleotide") ? (
-                          !variant.evo2Result ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-primary/20 bg-secondary text-primary hover:bg-secondary/10 h-7 cursor-pointer px-3 text-xs"
-                              disabled={variant.isAnalyzing}
-                              onClick={() => analyzeVariant(variant)}
-                            >
-                              {variant.isAnalyzing ? (
-                                <>
-                                  <span className="mr-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-[#3c4f3d]/30 border-t-[#3c4f3d]"></span>
-                                  Analyzing...
-                                </>
-                              ) : (
-                                <>
-                                  <Zap className="mr-1 inline-block h-3 w-3" />
-                                  Analyze with Evo2
-                                </>
-                              )}
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-7 cursor-pointer border-green-200 bg-green-50 px-3 text-xs text-green-700 hover:bg-green-100"
-                              onClick={() => showComparison(variant)}
-                            >
-                              <BarChart2 className="mr-1 inline-block h-3 w-3" />
-                              Compare Results
-                            </Button>
-                          )
-                        ) : null}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : (
-          <div className="flex h-48 flex-col items-center justify-center text-center text-gray-400">
-            <Search className="mb-4 h-10 w-10 text-gray-300" />
-            <p className="text-sm leading-relaxed">
-              No ClinVar variants found for this gene.
+      {isLoadingClinvar ? (
+        <div className="flex justify-center py-8">
+          <div className="text-center">
+            <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-[#3c4f3d]/30 border-t-[#de8246]"></div>
+            <p className="mt-3 text-sm text-[#3c4f3d]/70">
+              Loading variants...
             </p>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      ) : clinvarVariants.length > 0 ? (
+        <div className="max-h-[500px] space-y-2 overflow-y-auto">
+          {clinvarVariants.map((variant) => (
+            <div
+              key={variant.clinvar_id}
+              className="rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/20 p-4 transition-colors hover:border-[#3c4f3d]/20"
+            >
+              <div className="mb-3 flex items-start justify-between">
+                <div className="flex-1">
+                  <h4 className="text-sm font-medium text-[#3c4f3d]">
+                    {variant.title}
+                  </h4>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-[#3c4f3d]/60">
+                    <span>Location: {variant.location}</span>
+                    <span>•</span>
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `https://www.ncbi.nlm.nih.gov/clinvar/variation/${variant.clinvar_id}`,
+                          "_blank",
+                        )
+                      }
+                      className="flex items-center gap-1 text-[#de8246] hover:text-[#de8246]/80"
+                    >
+                      View in ClinVar
+                      <ExternalLink className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div>
+                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+                    Type
+                  </div>
+                  <div className="text-sm text-[#3c4f3d]">
+                    {variant.variation_type}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase">
+                    Clinical Significance
+                  </div>
+                  <div
+                    className={`inline-block rounded-md px-2 py-1 text-xs font-medium ${getClassificationColorClasses(variant.classification)}`}
+                  >
+                    {variant.classification || "Unknown"}
+                  </div>
+                  {variant.evo2Result && (
+                    <div className="mt-1">
+                      <div
+                        className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium ${getClassificationColorClasses(variant.evo2Result.prediction)}`}
+                      >
+                        <Shield className="h-3 w-3" />
+                        Evo2: {variant.evo2Result.prediction}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-end justify-end">
+                  {variant.variation_type
+                    .toLowerCase()
+                    .includes("single nucleotide") ? (
+                    !variant.evo2Result ? (
+                      <button
+                        disabled={variant.isAnalyzing}
+                        onClick={() => analyzeVariant(variant)}
+                        className="flex h-9 items-center gap-1.5 rounded-lg border border-[#de8246]/30 bg-[#de8246]/10 px-3 text-sm font-medium text-[#de8246] transition-colors hover:bg-[#de8246]/20 disabled:opacity-50"
+                      >
+                        {variant.isAnalyzing ? (
+                          <>
+                            <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-[#de8246]/30 border-t-[#de8246]"></span>
+                            Analyzing...
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="h-3.5 w-3.5" />
+                            Analyze with Evo2
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => showComparison(variant)}
+                        className="flex h-9 items-center gap-1.5 rounded-lg border border-green-200 bg-green-50 px-3 text-sm font-medium text-green-700 transition-colors hover:bg-green-100"
+                      >
+                        <BarChart2 className="h-3.5 w-3.5" />
+                        Compare Results
+                      </button>
+                    )
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex h-48 flex-col items-center justify-center text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#e9eeea]">
+            <Search className="h-6 w-6 text-[#3c4f3d]/30" />
+          </div>
+          <p className="text-sm text-[#3c4f3d]/60">
+            No ClinVar variants found for this gene
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

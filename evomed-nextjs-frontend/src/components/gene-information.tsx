@@ -17,106 +17,101 @@ export function GeneInformation({
   geneBounds: GeneBounds | null;
 }) {
   return (
-    <Card className="gap-0 border-none bg-white py-0 shadow-sm">
-      <CardHeader className="pt-4 pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-normal text-[#3c4f3d]/70">
+    <div className="rounded-lg border border-[#3c4f3d]/10 bg-white p-5">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h3 className="text-base font-medium text-[#3c4f3d]">
             Gene Information
-          </CardTitle>
+          </h3>
           <Tooltip content="Basic information about this gene including its symbol, full name, location on the chromosome, and links to external databases. This data comes from genomic reference databases and provides context about the gene's function and characteristics." />
         </div>
-      </CardHeader>
-      <CardContent className="pb-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <div className="flex">
-              <span className="min-28 w-28 text-xs text-[#3c4f3d]/70">
-                Symbol:
-              </span>
-              <span className="text-xs">{gene.symbol}</span>
-            </div>
-            <div className="flex">
-              <span className="min-28 w-28 text-xs text-[#3c4f3d]/70">
-                Name:
-              </span>
-              <span className="text-xs">{gene.name}</span>
-            </div>
-            {gene.description && gene.description !== gene.name && (
-              <div className="flex">
-                <span className="min-28 w-28 text-xs text-[#3c4f3d]/70">
-                  Description:
-                </span>
-                <span className="text-xs">{gene.description}</span>
-              </div>
-            )}
-            <div className="flex">
-              <span className="min-28 w-28 text-xs text-[#3c4f3d]/70">
-                Chromosome:
-              </span>
-              <span className="text-xs">{gene.chrom}</span>
-            </div>
-            {geneBounds && (
-              <div className="flex">
-                <span className="min-28 w-28 text-xs text-[#3c4f3d]/70">
-                  Position:
-                </span>
-                <span className="text-xs">
-                  {Math.min(geneBounds.min, geneBounds.max).toLocaleString()} -{" "}
-                  {Math.max(geneBounds.min, geneBounds.max).toLocaleString()} (
-                  {Math.abs(
-                    geneBounds.max - geneBounds.min + 1,
-                  ).toLocaleString()}{" "}
-                  bp)
-                  {geneDetail?.genomicinfo?.[0]?.strand === "-" &&
-                    " (reverse strand)"}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            {gene.gene_id && (
-              <div className="flex">
-                <span className="min-28 w-28 text-xs text-[#3c4f3d]/70">
-                  Gene ID:
-                </span>
-                <span className="text-xs">
-                  <a
-                    href={`https://www.ncbi.nlm.nih.gov/gene/${gene.gene_id}`}
-                    target="_blank"
-                    className="flex items-center text-blue-600 hover:underline"
-                  >
-                    {gene.gene_id}
-                    <ExternalLink className="ml-1 inline-block h-3 w-3" />
-                  </a>
-                </span>
-              </div>
-            )}
-            {geneDetail?.organism && (
-              <div className="flex">
-                <span className="w-28 text-xs text-[#3c4f3d]/70">
-                  Organism:
-                </span>
-                <span className="text-xs">
-                  {geneDetail.organism.scientificname}{" "}
-                  {geneDetail.organism.commonname &&
-                    ` (${geneDetail.organism.commonname})`}
-                </span>
-              </div>
-            )}
+      </div>
 
-            {geneDetail?.summary && (
-              <div className="mt-4">
-                <h3 className="mb-2 text-xs font-medium text-[#3c4f3d]">
-                  Summary:
-                </h3>
-                <p className="text-xs leading-relaxed text-[#3c4f3d]/80">
-                  {geneDetail.summary}
-                </p>
-              </div>
-            )}
+      <div className="space-y-4">
+        <div className="grid gap-3 text-sm">
+          <div className="flex items-start border-b border-[#3c4f3d]/5 pb-2">
+            <span className="w-32 font-medium text-[#3c4f3d]/70">Symbol</span>
+            <span className="flex-1 text-[#3c4f3d]">{gene.symbol}</span>
           </div>
+
+          <div className="flex items-start border-b border-[#3c4f3d]/5 pb-2">
+            <span className="w-32 font-medium text-[#3c4f3d]/70">Name</span>
+            <span className="flex-1 text-[#3c4f3d]">{gene.name}</span>
+          </div>
+
+          {gene.description && gene.description !== gene.name && (
+            <div className="flex items-start border-b border-[#3c4f3d]/5 pb-2">
+              <span className="w-32 font-medium text-[#3c4f3d]/70">
+                Description
+              </span>
+              <span className="flex-1 text-[#3c4f3d]">{gene.description}</span>
+            </div>
+          )}
+
+          <div className="flex items-start border-b border-[#3c4f3d]/5 pb-2">
+            <span className="w-32 font-medium text-[#3c4f3d]/70">
+              Chromosome
+            </span>
+            <span className="flex-1 text-[#3c4f3d]">{gene.chrom}</span>
+          </div>
+
+          {geneBounds && (
+            <div className="flex items-start border-b border-[#3c4f3d]/5 pb-2">
+              <span className="w-32 font-medium text-[#3c4f3d]/70">
+                Position
+              </span>
+              <span className="flex-1 text-[#3c4f3d]">
+                {Math.min(geneBounds.min, geneBounds.max).toLocaleString()} -{" "}
+                {Math.max(geneBounds.min, geneBounds.max).toLocaleString()} (
+                {Math.abs(geneBounds.max - geneBounds.min + 1).toLocaleString()}{" "}
+                bp)
+                {geneDetail?.genomicinfo?.[0]?.strand === "-" &&
+                  " (reverse strand)"}
+              </span>
+            </div>
+          )}
+
+          {gene.gene_id && (
+            <div className="flex items-start border-b border-[#3c4f3d]/5 pb-2">
+              <span className="w-32 font-medium text-[#3c4f3d]/70">
+                Gene ID
+              </span>
+              <span className="flex-1">
+                <a
+                  href={`https://www.ncbi.nlm.nih.gov/gene/${gene.gene_id}`}
+                  target="_blank"
+                  className="flex items-center text-[#de8246] hover:text-[#de8246]/80"
+                >
+                  {gene.gene_id}
+                  <ExternalLink className="ml-1 h-3 w-3" />
+                </a>
+              </span>
+            </div>
+          )}
+
+          {geneDetail?.organism && (
+            <div className="flex items-start border-b border-[#3c4f3d]/5 pb-2">
+              <span className="w-32 font-medium text-[#3c4f3d]/70">
+                Organism
+              </span>
+              <span className="flex-1 text-[#3c4f3d]">
+                {geneDetail.organism.scientificname}
+                {geneDetail.organism.commonname &&
+                  ` (${geneDetail.organism.commonname})`}
+              </span>
+            </div>
+          )}
         </div>
-      </CardContent>
-    </Card>
+
+        {geneDetail?.summary && (
+          <div className="mt-4 rounded-lg bg-[#e9eeea]/30 p-4">
+            <h4 className="mb-2 text-sm font-medium text-[#3c4f3d]">Summary</h4>
+            <p className="text-sm leading-relaxed text-[#3c4f3d]/80">
+              {geneDetail.summary}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
