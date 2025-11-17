@@ -162,3 +162,4 @@ brca1_analysis_plot.png
 # Backup files
 *.bak
 *.backup
+evomed-lightweight-model/data/clinvar_variant_summary.txt.gz

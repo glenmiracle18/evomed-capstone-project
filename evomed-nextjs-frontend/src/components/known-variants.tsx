@@ -218,7 +218,7 @@ export default function KnownVariants({
                         ) : (
                           <>
                             <Zap className="h-3.5 w-3.5" />
-                            Analyze with Evo2
+                            Analyze Mutation
                           </>
                         )}
                       </button>
