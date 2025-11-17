@@ -1,34 +1,34 @@
 """
 Modal training script for DNABERT-2 fine-tuning on BRCA1 variant pathogenicity
 """
-import modal
-from pathlib import Path
+
 import sys
+from pathlib import Path
+
+import modal
 
 # Modal app definition
 app = modal.App("evomed-lightweight-training")
 
 # Create Modal image with all dependencies
-image = (
-    modal.Image.debian_slim(python_version="3.11")
-    .pip_install(
-        "torch>=2.0.0",
-        "transformers>=4.35.0",
-        "datasets>=2.14.0",
-        "accelerate>=0.24.0",
-        "peft>=0.6.0",
-        "pandas>=2.0.0",
-        "numpy>=1.24.0",
-        "biopython>=1.81",
-        "scikit-learn>=1.3.0",
-        "tqdm>=4.66.0",
-        "requests>=2.31.0",
-    )
+image = modal.Image.debian_slim(python_version="3.11").pip_install(
+    "torch>=2.0.0",
+    "transformers>=4.35.0",
+    "datasets>=2.14.0",
+    "accelerate>=0.24.0",
+    "peft>=0.6.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "biopython>=1.81",
+    "scikit-learn>=1.3.0",
+    "tqdm>=4.66.0",
+    "requests>=2.31.0",
 )
 
 # Create Modal volumes for data persistence
 data_volume = modal.Volume.from_name("evomed-training-data", create_if_missing=True)
 model_volume = modal.Volume.from_name("evomed-trained-models", create_if_missing=True)
+
 
 @app.function(
     image=image,
@@ -44,22 +44,27 @@ def train_dnabert2():
     """
     Fine-tune DNABERT-2 on BRCA1 variant pathogenicity classification
     """
-    import os
-    import torch
-    from transformers import (
-        AutoTokenizer,
-        AutoModelForSequenceClassification,
-        TrainingArguments,
-        Trainer,
-        EarlyStoppingCallback,
-    )
-    from peft import LoraConfig, get_peft_model, TaskType
-    from datasets import Dataset
-    import pandas as pd
-    import numpy as np
-    from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score
     import json
+    import os
     from datetime import datetime
+
+    import numpy as np
+    import pandas as pd
+    import torch
+    from datasets import Dataset
+    from peft import LoraConfig, TaskType, get_peft_model
+    from sklearn.metrics import (
+        accuracy_score,
+        precision_recall_fscore_support,
+        roc_auc_score,
+    )
+    from transformers import (
+        AutoModelForSequenceClassification,
+        AutoTokenizer,
+        EarlyStoppingCallback,
+        Trainer,
+        TrainingArguments,
+    )
 
     print("=" * 70)
     print("🧬 EvoMed Lightweight Model - DNABERT-2 Training")
@@ -88,7 +93,9 @@ def train_dnabert2():
     print(f"\n🖥️  Device: {device}")
     if torch.cuda.is_available():
         print(f"   GPU: {torch.cuda.get_device_name(0)}")
-        print(f"   Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+        print(
+            f"   Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB"
+        )
 
     # Load datasets
     print("\n📂 Loading datasets...")
@@ -114,17 +121,13 @@ def train_dnabert2():
     def prepare_sequence(row):
         """
         Prepare DNA sequence for the model
-        For this rapid prototype, we'll use a simplified approach
         """
-        # In production, fetch actual genomic sequence around variant
-        # For now, create a simple representation
-        ref = str(row['ref'])[:MAX_LENGTH//2]
-        alt = str(row['alt'])[:MAX_LENGTH//2]
+        ref = str(row["ref"])[: MAX_LENGTH // 2]
+        alt = str(row["alt"])[: MAX_LENGTH // 2]
 
         # Pad with N's to create context
-        # This is a placeholder - real implementation would use actual genomic context
         context_size = MAX_LENGTH // 4
-        padding = 'N' * context_size
+        padding = "N" * context_size
 
         # Alternate sequence: padding + variant + padding
         sequence = padding + alt + padding
@@ -143,15 +146,17 @@ def train_dnabert2():
             try:
                 seq = prepare_sequence(row)
                 sequences.append(seq)
-                labels.append(int(row['label']))
+                labels.append(int(row["label"]))
             except Exception as e:
                 print(f"   Warning: Skipping row due to error: {e}")
                 continue
 
-        return Dataset.from_dict({
-            'sequence': sequences,
-            'label': labels,
-        })
+        return Dataset.from_dict(
+            {
+                "sequence": sequences,
+                "label": labels,
+            }
+        )
 
     train_dataset = df_to_dataset(train_df)
     val_dataset = df_to_dataset(val_df)
@@ -166,8 +171,8 @@ def train_dnabert2():
 
     def tokenize_function(examples):
         return tokenizer(
-            examples['sequence'],
-            padding='max_length',
+            examples["sequence"],
+            padding="max_length",
             truncation=True,
             max_length=MAX_LENGTH,
         )
@@ -230,14 +235,14 @@ def train_dnabert2():
 
         accuracy = accuracy_score(labels, predictions)
         precision, recall, f1, _ = precision_recall_fscore_support(
-            labels, predictions, average='binary'
+            labels, predictions, average="binary"
         )
 
         return {
-            'accuracy': accuracy,
-            'precision': precision,
-            'recall': recall,
-            'f1': f1,
+            "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
         }
 
     # Trainer
@@ -269,14 +274,16 @@ def train_dnabert2():
 
     # Get predictions for more detailed metrics
     predictions = trainer.predict(test_dataset)
-    pred_probs = torch.softmax(torch.tensor(predictions.predictions), dim=1)[:, 1].numpy()
+    pred_probs = torch.softmax(torch.tensor(predictions.predictions), dim=1)[
+        :, 1
+    ].numpy()
     pred_labels = np.argmax(predictions.predictions, axis=1)
     true_labels = predictions.label_ids
 
     # Calculate additional metrics
     try:
         auc = roc_auc_score(true_labels, pred_probs)
-        test_results['auc'] = auc
+        test_results["auc"] = auc
     except Exception as e:
         print(f"   Warning: Could not calculate AUC: {e}")
 
@@ -285,31 +292,27 @@ def train_dnabert2():
     benign_mask = true_labels == 0
 
     pathogenic_acc = accuracy_score(
-        true_labels[pathogenic_mask],
-        pred_labels[pathogenic_mask]
+        true_labels[pathogenic_mask], pred_labels[pathogenic_mask]
     )
-    benign_acc = accuracy_score(
-        true_labels[benign_mask],
-        pred_labels[benign_mask]
-    )
+    benign_acc = accuracy_score(true_labels[benign_mask], pred_labels[benign_mask])
 
     # Save results
     results = {
-        'timestamp': datetime.now().isoformat(),
-        'model_name': MODEL_NAME,
-        'train_samples': len(train_dataset),
-        'val_samples': len(val_dataset),
-        'test_samples': len(test_dataset),
-        'num_epochs': NUM_EPOCHS,
-        'learning_rate': LEARNING_RATE,
-        'batch_size': BATCH_SIZE,
-        'test_results': {k: float(v) for k, v in test_results.items()},
-        'pathogenic_accuracy': float(pathogenic_acc),
-        'benign_accuracy': float(benign_acc),
+        "timestamp": datetime.now().isoformat(),
+        "model_name": MODEL_NAME,
+        "train_samples": len(train_dataset),
+        "val_samples": len(val_dataset),
+        "test_samples": len(test_dataset),
+        "num_epochs": NUM_EPOCHS,
+        "learning_rate": LEARNING_RATE,
+        "batch_size": BATCH_SIZE,
+        "test_results": {k: float(v) for k, v in test_results.items()},
+        "pathogenic_accuracy": float(pathogenic_acc),
+        "benign_accuracy": float(benign_acc),
     }
 
     results_path = "/models/training_results.json"
-    with open(results_path, 'w') as f:
+    with open(results_path, "w") as f:
         json.dump(results, f, indent=2)
 
     # Print summary
@@ -321,7 +324,7 @@ def train_dnabert2():
     print(f"   Precision: {test_results.get('eval_precision', 0):.4f}")
     print(f"   Recall: {test_results.get('eval_recall', 0):.4f}")
     print(f"   F1 Score: {test_results.get('eval_f1', 0):.4f}")
-    if 'auc' in test_results:
+    if "auc" in test_results:
         print(f"   AUC: {test_results['auc']:.4f}")
     print(f"\n   Pathogenic Accuracy: {pathogenic_acc:.4f}")
     print(f"   Benign Accuracy: {benign_acc:.4f}")
@@ -330,6 +333,7 @@ def train_dnabert2():
     print(f"📊 Results saved to: {results_path}")
 
     return results
+
 
 @app.local_entrypoint()
 def main():
@@ -344,9 +348,11 @@ def main():
         print("✅ Training completed successfully!")
         print("\n📊 Results:")
         import json
+
         print(json.dumps(result, indent=2))
 
     return result
+
 
 if __name__ == "__main__":
     main()

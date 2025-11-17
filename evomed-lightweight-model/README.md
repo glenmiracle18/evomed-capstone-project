@@ -1,6 +1,6 @@
 # EvoMed Lightweight Variant Classifier
 
-Fast, African population-aware BRCA1 variant pathogenicity classifier using DNABERT-2.
+Fast, African population-aware BRCA1 variant pathogenicity classifier using DNABERT-2
 
 ## Quick Start
 
