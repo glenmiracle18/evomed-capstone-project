@@ -1,6 +1,7 @@
 """
 Configuration file for lightweight BRCA1 variant classifier
 """
+
 import os
 from pathlib import Path
 
@@ -14,9 +15,11 @@ LOGS_DIR = PROJECT_ROOT / "logs"
 for dir_path in [DATA_DIR, MODELS_DIR, LOGS_DIR]:
     dir_path.mkdir(exist_ok=True, parents=True)
 
-# Data sources
-BRCA_EXCHANGE_URL = "https://brcaexchange.org/backend/downloads/releases/release-12-06-23/built_with_change_types.tsv"
-CLINVAR_FTP = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz"
+# Data sources - BRCA Exchange API
+BRCA_EXCHANGE_API_BASE = "https://brcaexchange.org/backend/data/"
+CLINVAR_FTP = (
+    "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz"
+)
 
 # Target gene
 TARGET_GENE = "BRCA1"
@@ -59,13 +62,13 @@ HIGH_CONFIDENCE_THRESHOLD = 0.7
 
 # African population adjustment (similar to your existing approach)
 AFRICAN_ADJUSTMENT_THRESHOLDS = {
-    "high": 0.05,      # AF > 5%: strong benign evidence
-    "medium": 0.01,    # AF > 1%: moderate evidence
-    "low": 0.005,      # AF > 0.5%: mild evidence
+    "high": 0.05,  # AF > 5%: strong benign evidence
+    "medium": 0.01,  # AF > 1%: moderate evidence
+    "low": 0.005,  # AF > 0.5%: mild evidence
 }
 
 AFRICAN_ADJUSTMENT_SCORES = {
-    "high": 0.15,      # Larger adjustment for training
+    "high": 0.15,  # Larger adjustment for training
     "medium": 0.10,
     "low": 0.05,
 }
