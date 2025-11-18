@@ -364,7 +364,7 @@ export default function PreScreeningPage() {
               <div className="space-y-4">
                 {/* Tabbed Results */}
                 <Tabs defaultValue="risk" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-white dark:bg-[#242924] border border-[#3c4f3d]/10 dark:border-[#3c4f3d]/20 rounded-lg p-1">
+                  <TabsList className="grid w-full grid-cols-2 bg-white dark:bg-[#242924] border border-[#3c4f3d]/10 dark:border-[#3c4f3d]/20 rounded-lg p-1">
                     <TabsTrigger
                       value="risk"
                       className="rounded-md data-[state=active]:bg-[#de8246] data-[state=active]:text-white"
@@ -377,12 +377,6 @@ export default function PreScreeningPage() {
                     >
                       Recommended Variants
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="next-steps"
-                      className="rounded-md data-[state=active]:bg-[#de8246] data-[state=active]:text-white"
-                    >
-                      Next Steps
-                    </TabsTrigger>
                   </TabsList>
                   <TabsContent value="risk" className="mt-4">
                     <RiskAssessmentDisplay
@@ -394,14 +388,6 @@ export default function PreScreeningPage() {
                       variants={recommendations.priorityVariants}
                       ancestry={recommendations.ancestry}
                       recommendedGenes={recommendations.recommendedGenes}
-                    />
-                  </TabsContent>
-                  <TabsContent value="next-steps" className="mt-4">
-                    <TestingRecommendations
-                      testingStrategy={recommendations.testingStrategy}
-                      estimatedCost={recommendations.estimatedCost}
-                      nextSteps={recommendations.nextSteps}
-                      riskLevel={recommendations.riskAssessment.riskLevel}
                     />
                   </TabsContent>
                 </Tabs>

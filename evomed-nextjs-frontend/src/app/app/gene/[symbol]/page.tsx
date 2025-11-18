@@ -25,27 +25,76 @@ export default function GenePage() {
     const fetchGene = async () => {
       if (!geneSymbol) return;
 
-      try {
-        setIsLoading(true);
-        const data = await searchGenes(geneSymbol, genomeId);
-        const foundGene = data.results.find(
-          (g) => g.symbol.toLowerCase() === geneSymbol.toLowerCase(),
-        );
+      let retries = 0;
+      const maxRetries = 3;
 
-        if (foundGene) {
-          setGene(foundGene);
-        } else {
-          setError(`Gene "${geneSymbol}" not found`);
+      while (retries < maxRetries) {
+        try {
+          setIsLoading(true);
+          const data = await searchGenes(geneSymbol, genomeId);
+          const foundGene = data.results.find(
+            (g) => g.symbol.toLowerCase() === geneSymbol.toLowerCase(),
+          );
+
+          if (foundGene) {
+            setGene(foundGene);
+            return;
+          }
+
+          // If not found in results but we have chromosome from params, create fallback gene
+          if (chromosome && !foundGene) {
+            // Common cancer genes with their chromosome locations
+            const commonGenes: Record<string, { chrom: string; description: string }> = {
+              'BRCA1': { chrom: 'chr17', description: 'BRCA1 DNA repair associated' },
+              'BRCA2': { chrom: 'chr13', description: 'BRCA2 DNA repair associated' },
+              'TP53': { chrom: 'chr17', description: 'Tumor protein p53' },
+              'PALB2': { chrom: 'chr16', description: 'Partner and localizer of BRCA2' },
+              'ATM': { chrom: 'chr11', description: 'ATM serine/threonine kinase' },
+              'CHEK2': { chrom: 'chr22', description: 'Checkpoint kinase 2' },
+              'CDH1': { chrom: 'chr16', description: 'Cadherin 1' },
+              'PTEN': { chrom: 'chr10', description: 'Phosphatase and tensin homolog' },
+              'STK11': { chrom: 'chr19', description: 'Serine/threonine kinase 11' },
+              'RAD51C': { chrom: 'chr17', description: 'RAD51 paralog C' },
+              'RAD51D': { chrom: 'chr17', description: 'RAD51 paralog D' },
+              'BARD1': { chrom: 'chr2', description: 'BRCA1 associated RING domain 1' },
+            };
+
+            const geneInfo = commonGenes[geneSymbol.toUpperCase()];
+            if (geneInfo) {
+              setGene({
+                symbol: geneSymbol.toUpperCase(),
+                name: geneInfo.description,
+                chrom: geneInfo.chrom,
+                description: geneInfo.description,
+                gene_id: '',
+              });
+              return;
+            }
+          }
+
+          // If still not found after last retry, show error
+          if (retries === maxRetries - 1) {
+            setError(`Gene "${geneSymbol}" not found`);
+          }
+
+        } catch (err) {
+          if (retries === maxRetries - 1) {
+            setError("Failed to load gene data");
+          }
+        } finally {
+          setIsLoading(false);
         }
-      } catch (err) {
-        setError("Failed to load gene data");
-      } finally {
-        setIsLoading(false);
+
+        retries++;
+        // Wait before retry (exponential backoff: 500ms, 1s, 2s)
+        if (retries < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, retries - 1)));
+        }
       }
     };
 
     fetchGene();
-  }, [geneSymbol, genomeId]);
+  }, [geneSymbol, genomeId, chromosome]);
 
   const handleClose = () => {
     // Navigate back to the main app page, preserving genome parameter if it exists
