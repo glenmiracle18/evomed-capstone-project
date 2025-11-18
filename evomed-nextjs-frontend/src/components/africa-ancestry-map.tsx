@@ -53,11 +53,13 @@ const COUNTRY_TO_REGION: Record<string, string> = {
   "Djibouti": "east-africa",
   "South Sudan": "east-africa",
 
+  // Cameroon (Separate region for country focus)
+  "Cameroon": "cameroon",
+
   // Central Africa
   "Democratic Republic of the Congo": "central-africa",
   "Dem. Rep. Congo": "central-africa",
   "Congo": "central-africa",
-  "Cameroon": "central-africa",
   "Central African Republic": "central-africa",
   "Chad": "central-africa",
   "Gabon": "central-africa",
@@ -96,6 +98,15 @@ const REGION_TO_ANCESTRY: Record<string, { value: string; label: string }[]> = {
     { value: "east-african-ethiopian", label: "Ethiopian" },
     { value: "east-african-somali", label: "Somali" },
   ],
+  "cameroon": [
+    { value: "cameroon-bamileke", label: "Bamileke (West Region)" },
+    { value: "cameroon-fulani", label: "Fulani/Fulbe (North)" },
+    { value: "cameroon-beti", label: "Beti-Pahuin (Centre/South)" },
+    { value: "cameroon-duala", label: "Duala (Littoral)" },
+    { value: "cameroon-bassa", label: "Bassa (Littoral)" },
+    { value: "cameroon-bamoun", label: "Bamoun (West)" },
+    { value: "cameroon-other", label: "Other Cameroonian" },
+  ],
   "central-africa": [
     { value: "central-african-bantu", label: "Bantu" },
   ],
@@ -110,6 +121,7 @@ const REGION_LABELS: Record<string, string> = {
   "north-africa": "North Africa",
   "west-africa": "West Africa",
   "east-africa": "East Africa",
+  "cameroon": "Cameroon",
   "central-africa": "Central Africa",
   "south-africa": "Southern Africa",
 };
