@@ -19,6 +19,7 @@ import { VariantComparisonModal } from "./variant-comparison-modal";
 import VariantAnalysis, {
   type VariantAnalysisHandle,
 } from "./variant-analysis";
+import { DNAHelix3D } from "./dna-helix-3d";
 
 export default function GeneViewer({
   gene,
@@ -309,6 +310,18 @@ export default function GeneViewer({
             onSequenceClick={handleSequenceClick}
             maxViewRange={10000}
           />
+
+          {/* 3D DNA Helix Visualization */}
+          {geneSequence && (
+            <DNAHelix3D
+              sequence={geneSequence}
+              mutationPosition={activeSequencePosition}
+              referenceBase={activeReferenceNucleotide || undefined}
+              alternateBase={prefilledAlt || undefined}
+              geneName={gene.symbol}
+              startPosition={actualRange?.start}
+            />
+          )}
         </div>
       </div>
 
