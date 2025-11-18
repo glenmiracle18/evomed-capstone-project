@@ -20,11 +20,11 @@ import {
   ArrowLeft,
   Loader2,
   CheckCircle,
-  Users,
-  User,
-  FlaskConical,
-  Stethoscope,
 } from "lucide-react";
+import IconLeafOutline18 from "~/components/icons/leaf-outline";
+import IconUserFill18 from "~/components/icons/user-fill";
+import IconUsersFill18 from "~/components/icons/users-fill";
+import IconFeatherFill18 from "~/components/icons/feather-fill";
 
 type Step = "intro" | "demographics" | "family-history" | "results";
 
@@ -117,10 +117,10 @@ export default function PreScreeningPage() {
 
   const renderStepIndicator = () => {
     const steps = [
-      { id: "intro", label: "Welcome", icon: CheckCircle },
-      { id: "demographics", label: "Your Info", icon: User },
-      { id: "family-history", label: "Family History", icon: Users },
-      { id: "results", label: "Results", icon: FlaskConical },
+      { id: "intro", label: "Welcome", icon: IconLeafOutline18 },
+      { id: "demographics", label: "Your Info", icon: IconUserFill18 },
+      { id: "family-history", label: "Family History", icon: IconUsersFill18 },
+      { id: "results", label: "Results", icon: IconFeatherFill18 },
     ];
 
     const currentIndex = steps.findIndex((s) => s.id === currentStep);
@@ -144,7 +144,7 @@ export default function PreScreeningPage() {
                       : "bg-[#e9eeea] text-[#3c4f3d]/40 dark:bg-[#1a1f1a] dark:text-white/40"
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <Icon size="16px" strokeWidth={1.5} />
                 <span className="text-sm font-medium">{step.label}</span>
               </div>
               {index < steps.length - 1 && (
@@ -187,7 +187,7 @@ export default function PreScreeningPage() {
               <CardContent className="p-8">
                 <div className="mb-6 text-center">
                   <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#de8246]/10">
-                    <Stethoscope className="h-8 w-8 text-[#de8246]" />
+                    <IconLeafOutline18 size="32px" strokeWidth={1.5} className="text-[#de8246]" />
                   </div>
                   <h2 className="mb-2 text-2xl font-bold text-[#3c4f3d] dark:text-white">
                     Welcome to the Genetic Pre-Screening Tool
@@ -229,33 +229,19 @@ export default function PreScreeningPage() {
                       <li className="flex items-start gap-2">
                         <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
                         <span>
-                          Personalized risk assessment based on family history
+                          Risk assessment based on family history
                         </span>
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
                         <span>
-                          List of 20 most common genetic variants in your
-                          population
+                          Recommended genetic variants for your population
                         </span>
                       </li>
                       <li className="flex items-start gap-2">
                         <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
                         <span>
-                          Targeted testing recommendations (20x cheaper than
-                          full genome)
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                        <span>
-                          Downloadable report to share with healthcare providers
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                        <span>
-                          Next steps and resources for affordable testing
+                          Downloadable report for healthcare providers
                         </span>
                       </li>
                     </ul>
@@ -350,7 +336,7 @@ export default function PreScreeningPage() {
                   ) : (
                     <>
                       Get Recommendations
-                      <FlaskConical className="ml-2 h-4 w-4" />
+                      <IconFeatherFill18 size="16px" className="ml-2" />
                     </>
                   )}
                 </Button>
