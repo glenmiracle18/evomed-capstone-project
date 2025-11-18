@@ -260,18 +260,6 @@ export default function GeneViewer({
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Left Column */}
         <div className="space-y-6">
-          {/* 3D DNA Helix Visualization */}
-          {geneSequence && (
-            <DNAHelix3D
-              sequence={geneSequence}
-              mutationPosition={activeSequencePosition}
-              referenceBase={activeReferenceNucleotide || undefined}
-              alternateBase={prefilledAlt || undefined}
-              geneName={gene.symbol}
-              startPosition={actualRange?.start}
-            />
-          )}
-
           <VariantAnalysis
             ref={variantAnalysisRef}
             gene={gene}
@@ -285,6 +273,18 @@ export default function GeneViewer({
             onUseAfricanAdjustmentChange={setUseAfricanAdjustment}
             initialAlt={prefilledAlt}
           />
+
+          {/* 3D DNA Helix Visualization */}
+          {geneSequence && (
+            <DNAHelix3D
+              sequence={geneSequence}
+              mutationPosition={activeSequencePosition}
+              referenceBase={activeReferenceNucleotide || undefined}
+              alternateBase={prefilledAlt || undefined}
+              geneName={gene.symbol}
+              startPosition={actualRange?.start}
+            />
+          )}
 
           <GeneInformation
             gene={gene}
