@@ -260,6 +260,18 @@ export default function GeneViewer({
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Left Column */}
         <div className="space-y-6">
+          {/* 3D DNA Helix Visualization */}
+          {geneSequence && (
+            <DNAHelix3D
+              sequence={geneSequence}
+              mutationPosition={activeSequencePosition}
+              referenceBase={activeReferenceNucleotide || undefined}
+              alternateBase={prefilledAlt || undefined}
+              geneName={gene.symbol}
+              startPosition={actualRange?.start}
+            />
+          )}
+
           <VariantAnalysis
             ref={variantAnalysisRef}
             gene={gene}
@@ -310,18 +322,6 @@ export default function GeneViewer({
             onSequenceClick={handleSequenceClick}
             maxViewRange={10000}
           />
-
-          {/* 3D DNA Helix Visualization */}
-          {geneSequence && (
-            <DNAHelix3D
-              sequence={geneSequence}
-              mutationPosition={activeSequencePosition}
-              referenceBase={activeReferenceNucleotide || undefined}
-              alternateBase={prefilledAlt || undefined}
-              geneName={gene.symbol}
-              startPosition={actualRange?.start}
-            />
-          )}
         </div>
       </div>
 
