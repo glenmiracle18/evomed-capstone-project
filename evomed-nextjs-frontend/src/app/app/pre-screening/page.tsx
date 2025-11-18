@@ -165,20 +165,14 @@ export default function PreScreeningPage() {
 
   return (
     <div className="min-h-screen bg-[#e9eeea] p-6 dark:bg-[#1a1f1a]">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <div className="mb-6 text-center">
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#de8246]/10 px-4 py-1.5">
-            <Stethoscope className="h-4 w-4 text-[#de8246]" />
-            <span className="text-sm font-medium text-[#de8246]">
-              Pre-Screening Tool
-            </span>
-          </div>
-          <h1 className="mb-2 text-3xl font-bold text-[#3c4f3d] dark:text-white">
-            Genetic Testing Recommender
+        <div className="mb-8">
+          <h1 className="mb-2 text-2xl font-medium text-[#3c4f3d] dark:text-white">
+            Genetic Pre-Screening
           </h1>
-          <p className="text-[#3c4f3d]/60 dark:text-white/60">
-            Find out which genetic tests are most relevant for you
+          <p className="text-sm text-[#3c4f3d]/60 dark:text-white/60">
+            Personalized variant recommendations based on family history
           </p>
         </div>
 
@@ -367,25 +361,7 @@ export default function PreScreeningPage() {
           {/* Results Step */}
           {currentStep === "results" && recommendations && (
             <>
-              <div className="space-y-6">
-                {/* Success Message */}
-                <Card className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/20">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
-                      <div>
-                        <h3 className="font-semibold text-green-900 dark:text-green-200">
-                          Analysis Complete!
-                        </h3>
-                        <p className="text-sm text-green-900/80 dark:text-green-200/80">
-                          Your personalized recommendations are ready. Scroll
-                          down to view all results.
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
+              <div className="space-y-4">
                 {/* Tabbed Results */}
                 <Tabs defaultValue="risk" className="w-full">
                   <TabsList className="grid w-full grid-cols-3 bg-white dark:bg-[#242924] border border-[#3c4f3d]/10 dark:border-[#3c4f3d]/20 rounded-lg p-1">

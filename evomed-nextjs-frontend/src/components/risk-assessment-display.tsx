@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { AlertTriangle, CheckCircle, Info, AlertCircle } from "lucide-react";
 
 interface RiskAssessment {
@@ -71,16 +70,7 @@ export function RiskAssessmentDisplay({
   const percentage = Math.round(riskAssessment.riskScore * 100);
 
   return (
-    <Card className="border-[#3c4f3d]/10 dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
-      <CardHeader>
-        <CardTitle className="text-[#3c4f3d] dark:text-white">
-          Risk Assessment Results
-        </CardTitle>
-        <p className="text-sm text-[#3c4f3d]/60 dark:text-white/60">
-          Based on your family history and demographic information
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-4">
         {/* Risk Level Badge */}
         <div
           className={`rounded-lg border p-6 ${colors.bg} ${colors.border}`}
@@ -220,7 +210,6 @@ export function RiskAssessmentDisplay({
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
