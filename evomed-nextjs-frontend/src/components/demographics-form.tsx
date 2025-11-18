@@ -10,7 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { User } from "lucide-react";
+import { User, Map, List } from "lucide-react";
+import { AfricaAncestryMap } from "./africa-ancestry-map";
 
 export interface DemographicsData {
   age: number;
@@ -74,6 +75,7 @@ export function DemographicsForm({
       hasCancer: false,
     },
   });
+  const [ancestryViewMode, setAncestryViewMode] = useState<"map" | "list">("map");
 
   const updateData = (field: keyof DemographicsData, value: any) => {
     const updated = { ...data, [field]: value };
@@ -147,27 +149,64 @@ export function DemographicsForm({
 
         {/* Ancestry */}
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-[#3c4f3d]/70 dark:text-white/70">
-            Ancestry/Ethnicity <span className="text-red-500">*</span>
-          </label>
-          <Select
-            value={data.ancestry}
-            onValueChange={(value) => updateData("ancestry", value)}
-          >
-            <SelectTrigger className="h-10 border-[#3c4f3d]/20 dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70">
-              <SelectValue placeholder="Select your ancestry" />
-            </SelectTrigger>
-            <SelectContent>
-              <div className="px-2 py-1.5 text-xs font-medium text-[#3c4f3d]/50 dark:text-white/50">
-                African Populations
-              </div>
-              {AFRICAN_ANCESTRIES.map((ancestry) => (
-                <SelectItem key={ancestry.value} value={ancestry.value}>
-                  {ancestry.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="text-xs font-medium text-[#3c4f3d]/70 dark:text-white/70">
+              Ancestry/Ethnicity <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-1 rounded-lg border border-[#3c4f3d]/10 dark:border-[#3c4f3d]/20 p-1">
+              <button
+                type="button"
+                onClick={() => setAncestryViewMode("map")}
+                className={`flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors ${
+                  ancestryViewMode === "map"
+                    ? "bg-[#de8246] text-white"
+                    : "text-[#3c4f3d]/60 hover:text-[#3c4f3d] dark:text-white/60 dark:hover:text-white"
+                }`}
+              >
+                <Map className="h-3 w-3" />
+                Map
+              </button>
+              <button
+                type="button"
+                onClick={() => setAncestryViewMode("list")}
+                className={`flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors ${
+                  ancestryViewMode === "list"
+                    ? "bg-[#de8246] text-white"
+                    : "text-[#3c4f3d]/60 hover:text-[#3c4f3d] dark:text-white/60 dark:hover:text-white"
+                }`}
+              >
+                <List className="h-3 w-3" />
+                List
+              </button>
+            </div>
+          </div>
+
+          {ancestryViewMode === "map" ? (
+            <AfricaAncestryMap
+              selectedAncestry={data.ancestry}
+              onAncestrySelect={(value) => updateData("ancestry", value)}
+            />
+          ) : (
+            <Select
+              value={data.ancestry}
+              onValueChange={(value) => updateData("ancestry", value)}
+            >
+              <SelectTrigger className="h-10 border-[#3c4f3d]/20 dark:border-[#3c4f3d]/30 dark:bg-[#1a1f1a] dark:text-white/70">
+                <SelectValue placeholder="Select your ancestry" />
+              </SelectTrigger>
+              <SelectContent>
+                <div className="px-2 py-1.5 text-xs font-medium text-[#3c4f3d]/50 dark:text-white/50">
+                  African Populations
+                </div>
+                {AFRICAN_ANCESTRIES.map((ancestry) => (
+                  <SelectItem key={ancestry.value} value={ancestry.value}>
+                    {ancestry.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
           <p className="mt-1.5 text-xs text-[#3c4f3d]/50 dark:text-white/50">
             Your ancestry helps us recommend the most relevant genetic variants to test
           </p>
