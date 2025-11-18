@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Text, PerspectiveCamera, MeshDistortMaterial, Sphere } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
 
@@ -29,52 +29,7 @@ const COMPLEMENT: Record<string, string> = {
   C: "G",
 };
 
-// Animated mutation particle effect
-function MutationParticles({ position }: { position: [number, number, number] }) {
-  const particlesRef = useRef<THREE.Points>(null);
-
-  useFrame(({ clock }) => {
-    if (particlesRef.current) {
-      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.5;
-    }
-  });
-
-  const particles = useMemo(() => {
-    const positions = [];
-    for (let i = 0; i < 50; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const radius = 0.3 + Math.random() * 0.5;
-      positions.push(
-        Math.cos(theta) * radius,
-        (Math.random() - 0.5) * 0.5,
-        Math.sin(theta) * radius
-      );
-    }
-    return new Float32Array(positions);
-  }, []);
-
-  return (
-    <points ref={particlesRef} position={position}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particles.length / 3}
-          array={particles}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.05}
-        color="#ff0000"
-        transparent
-        opacity={0.8}
-        sizeAttenuation
-      />
-    </points>
-  );
-}
-
-// Enhanced base pair with better materials and mutation effects
+// Simplified base pair for reliable rendering
 function BasePair({
   base1,
   base2,
@@ -94,16 +49,10 @@ function BasePair({
 }) {
   const [hovered, setHovered] = useState(false);
   const groupRef = useRef<THREE.Group>(null);
-  const mutationRef = useRef<THREE.Mesh>(null);
 
-  // Animate mutation pulsing
+  // Animate mutation
   useFrame(({ clock }) => {
-    if (isMutation && mutationRef.current) {
-      const scale = 1 + Math.sin(clock.getElapsedTime() * 3) * 0.15;
-      mutationRef.current.scale.set(scale, scale, scale);
-    }
     if (isMutation && groupRef.current) {
-      // Slight wobble for mutation
       groupRef.current.rotation.z = Math.sin(clock.getElapsedTime() * 2) * 0.1;
     }
   });
@@ -111,154 +60,89 @@ function BasePair({
   const color1 = BASE_COLORS[base1 as keyof typeof BASE_COLORS] || "#888888";
   const color2 = BASE_COLORS[base2 as keyof typeof BASE_COLORS] || "#888888";
 
-  // Mutation distorts the structure
-  const distortion = isMutation ? 0.4 : 0;
-
   return (
     <group ref={groupRef} position={[0, yPosition, 0]} rotation={[0, rotation, 0]}>
-      {/* Enhanced backbone spheres with metallic material */}
-      <mesh position={[2.2, 0, 0]}>
-        <sphereGeometry args={[0.18, 32, 32]} />
+      {/* Backbone spheres */}
+      <mesh position={[2, 0, 0]}>
+        <sphereGeometry args={[0.15, 16, 16]} />
         <meshStandardMaterial
-          color={isMutation ? "#ff3366" : "#2d3d2e"}
-          emissive={isMutation ? "#ff0000" : "#000000"}
-          emissiveIntensity={isMutation ? 1.2 : 0}
-          metalness={0.7}
-          roughness={0.3}
+          color={isMutation ? "#ff3366" : "#3c4f3d"}
         />
       </mesh>
 
-      <mesh position={[-2.2, 0, 0]}>
-        <sphereGeometry args={[0.18, 32, 32]} />
+      <mesh position={[-2, 0, 0]}>
+        <sphereGeometry args={[0.15, 16, 16]} />
         <meshStandardMaterial
-          color={isMutation ? "#ff3366" : "#2d3d2e"}
-          emissive={isMutation ? "#ff0000" : "#000000"}
-          emissiveIntensity={isMutation ? 1.2 : 0}
-          metalness={0.7}
-          roughness={0.3}
+          color={isMutation ? "#ff3366" : "#3c4f3d"}
         />
       </mesh>
 
-      {/* Connecting backbone tubes for continuous strand appearance */}
-      {position % 2 === 0 && (
-        <>
-          <mesh position={[2.2, 0.15, 0]} rotation={[0, rotation * 0.2, 0]}>
-            <cylinderGeometry args={[0.08, 0.08, 0.3, 16]} />
-            <meshStandardMaterial
-              color={isMutation ? "#ff3366" : "#3c4f3d"}
-              metalness={0.5}
-              roughness={0.4}
-            />
-          </mesh>
-          <mesh position={[-2.2, 0.15, 0]} rotation={[0, rotation * 0.2, 0]}>
-            <cylinderGeometry args={[0.08, 0.08, 0.3, 16]} />
-            <meshStandardMaterial
-              color={isMutation ? "#ff3366" : "#3c4f3d"}
-              metalness={0.5}
-              roughness={0.4}
-            />
-          </mesh>
-        </>
-      )}
-
-      {/* Enhanced base representations with better geometry */}
+      {/* Base pairs */}
       <mesh
-        position={[1.4, 0, 0]}
+        position={[1.3, 0, 0]}
         onClick={onClick}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <boxGeometry args={[0.7, 0.25, 0.25]} />
+        <boxGeometry args={[0.6, 0.2, 0.2]} />
         <meshStandardMaterial
           color={color1}
-          emissive={isMutation ? "#ff6600" : hovered ? color1 : "#000000"}
-          emissiveIntensity={isMutation ? 0.9 : hovered ? 0.4 : 0}
-          metalness={0.6}
-          roughness={0.2}
+          emissive={isMutation || hovered ? color1 : "#000000"}
+          emissiveIntensity={isMutation ? 0.5 : hovered ? 0.2 : 0}
         />
       </mesh>
 
       <mesh
-        position={[-1.4, 0, 0]}
+        position={[-1.3, 0, 0]}
         onClick={onClick}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <boxGeometry args={[0.7, 0.25, 0.25]} />
+        <boxGeometry args={[0.6, 0.2, 0.2]} />
         <meshStandardMaterial
           color={color2}
-          emissive={isMutation ? "#ff6600" : hovered ? color2 : "#000000"}
-          emissiveIntensity={isMutation ? 0.9 : hovered ? 0.4 : 0}
-          metalness={0.6}
-          roughness={0.2}
+          emissive={isMutation || hovered ? color2 : "#000000"}
+          emissiveIntensity={isMutation ? 0.5 : hovered ? 0.2 : 0}
         />
       </mesh>
 
-      {/* Hydrogen bonds - break/distort for mutations */}
+      {/* Hydrogen bonds */}
       {isMutation ? (
         <>
-          {/* Broken bonds for mutation */}
+          {/* Broken bonds */}
           <mesh position={[0.5, 0, 0]} rotation={[0, 0, Math.PI / 6]}>
-            <cylinderGeometry args={[0.06, 0.06, 1.5, 8]} />
+            <cylinderGeometry args={[0.05, 0.05, 1.3, 8]} />
             <meshStandardMaterial
               color="#ff0000"
-              opacity={0.7}
-              transparent
               emissive="#ff0000"
-              emissiveIntensity={0.8}
+              emissiveIntensity={0.5}
             />
           </mesh>
           <mesh position={[-0.5, 0, 0]} rotation={[0, 0, -Math.PI / 6]}>
-            <cylinderGeometry args={[0.06, 0.06, 1.5, 8]} />
+            <cylinderGeometry args={[0.05, 0.05, 1.3, 8]} />
             <meshStandardMaterial
               color="#ff0000"
-              opacity={0.7}
-              transparent
               emissive="#ff0000"
-              emissiveIntensity={0.8}
+              emissiveIntensity={0.5}
             />
           </mesh>
-          {/* Mutation marker - glowing sphere */}
-          <mesh ref={mutationRef} position={[0, 0, 0]}>
-            <sphereGeometry args={[0.35, 32, 32]} />
+          {/* Mutation glow */}
+          <mesh position={[0, 0, 0]}>
+            <sphereGeometry args={[0.3, 16, 16]} />
             <meshStandardMaterial
               color="#ff3366"
               emissive="#ff0000"
-              emissiveIntensity={1.5}
+              emissiveIntensity={1.0}
               transparent
-              opacity={0.6}
-              metalness={0.8}
-              roughness={0.1}
+              opacity={0.4}
             />
           </mesh>
-          {/* Mutation particles */}
-          <MutationParticles position={[0, 0, 0]} />
         </>
       ) : (
-        /* Normal hydrogen bonds */
-        <mesh position={[0, 0, 0]}>
-          <cylinderGeometry args={[0.06, 0.06, 2.8, 16]} />
-          <meshStandardMaterial
-            color="#b0b0b0"
-            opacity={0.7}
-            transparent
-            metalness={0.4}
-            roughness={0.5}
-          />
+        <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.05, 0.05, 2.6, 8]} />
+          <meshStandardMaterial color="#cccccc" />
         </mesh>
-      )}
-
-      {/* Position labels */}
-      {position % 10 === 0 && (
-        <Text
-          position={[3.2, 0, 0]}
-          fontSize={0.18}
-          color={isMutation ? "#ff3366" : "#3c4f3d"}
-          anchorX="left"
-          font="/fonts/inter-bold.woff"
-        >
-          {position}
-        </Text>
       )}
     </group>
   );
@@ -369,22 +253,18 @@ export function DNAHelix3D({
 
       {/* 3D Canvas */}
       <div className="relative h-[500px] bg-white dark:bg-[#242924]">
-        <Canvas>
-          <PerspectiveCamera makeDefault position={[8, 12, 8]} fov={60} />
+        <Canvas camera={{ position: [6, 0, 6], fov: 60 }}>
           <OrbitControls
             enableZoom={true}
             enablePan={true}
             enableRotate={true}
             autoRotate={true}
-            autoRotateSpeed={0.8}
-            minDistance={5}
-            maxDistance={30}
+            autoRotateSpeed={1.0}
           />
 
           {/* Lighting */}
-          <ambientLight intensity={0.8} />
-          <directionalLight position={[10, 10, 5]} intensity={1} />
-          <pointLight position={[-10, -10, -5]} intensity={0.5} color="#4488ff" />
+          <ambientLight intensity={1.0} />
+          <directionalLight position={[5, 5, 5]} intensity={0.8} />
 
           {/* DNA Helix */}
           <Helix
