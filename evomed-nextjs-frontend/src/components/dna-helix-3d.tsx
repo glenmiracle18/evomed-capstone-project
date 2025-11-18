@@ -351,26 +351,14 @@ export function DNAHelix3D({
       {/* Header */}
       <div className="border-b border-[#3c4f3d]/10 p-4 dark:border-[#3c4f3d]/20">
         <h3 className="text-lg font-semibold text-[#3c4f3d] dark:text-white">
-          🧬 3D DNA Structure {geneName && `- ${geneName}`}
+          3D DNA Structure {geneName && `- ${geneName}`}
         </h3>
-        {mutationPosition ? (
-          <div className="mt-2 rounded-lg bg-red-50 p-3 dark:bg-red-950/30">
-            <p className="text-sm font-semibold text-red-700 dark:text-red-400">
-              ⚠️ Genetic Mutation Detected
-            </p>
-            <p className="mt-1 text-sm text-red-600 dark:text-red-300">
-              Position {mutationPosition}:{" "}
-              <span className="font-mono font-bold">
-                {referenceBase} → {alternateBase}
-              </span>
-            </p>
-            <p className="mt-1 text-xs text-red-500 dark:text-red-400">
-              Structure disruption visible in the 3D model
-            </p>
-          </div>
-        ) : (
+        {mutationPosition && (
           <p className="mt-1 text-sm text-[#3c4f3d]/70 dark:text-white/70">
-            Interactive visualization of the double helix structure
+            Mutation at position {mutationPosition}:{" "}
+            <span className="font-mono font-semibold text-[#de8246]">
+              {referenceBase} → {alternateBase}
+            </span>
           </p>
         )}
       </div>
@@ -431,18 +419,15 @@ export function DNAHelix3D({
           </mesh>
         </Canvas>
 
-        {/* Info Panel */}
+        {/* Info Panel - pointer-events-none to allow interaction with canvas */}
         {selectedBase && (
-          <div className="absolute bottom-4 left-4 rounded-lg border border-[#3c4f3d]/20 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-[#3c4f3d]/40 dark:bg-[#242924]/95">
+          <div className="pointer-events-none absolute bottom-4 left-4 rounded-lg border border-[#3c4f3d]/20 bg-white/95 p-3 shadow-xl backdrop-blur-sm dark:border-[#3c4f3d]/40 dark:bg-[#242924]/95">
             <div className="text-xs font-semibold text-[#3c4f3d]/60 dark:text-white/60">
-              SELECTED BASE PAIR
-            </div>
-            <div className="mt-2 font-mono text-lg font-bold text-[#3c4f3d] dark:text-white">
               Position: {selectedBase.position}
             </div>
             <div className="mt-1 flex items-center gap-2">
               <div
-                className="h-4 w-4 rounded"
+                className="h-3 w-3 rounded"
                 style={{
                   backgroundColor:
                     BASE_COLORS[selectedBase.base as keyof typeof BASE_COLORS],
@@ -454,13 +439,6 @@ export function DNAHelix3D({
             </div>
           </div>
         )}
-
-        {/* Controls hint */}
-        <div className="absolute bottom-4 right-4 rounded-lg bg-black/60 px-3 py-2 text-xs text-white backdrop-blur-sm">
-          <div>🖱️ Drag to rotate</div>
-          <div>🔍 Scroll to zoom</div>
-          <div>👆 Click bases for info</div>
-        </div>
       </div>
 
       {/* Legend */}
@@ -468,36 +446,20 @@ export function DNAHelix3D({
         <div className="flex flex-wrap items-center gap-4 text-xs">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm bg-[#00ff88]" />
-            <span className="font-medium text-[#3c4f3d]/70 dark:text-white/70">
-              Adenine (A)
-            </span>
+            <span className="text-[#3c4f3d]/70 dark:text-white/70">A</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm bg-[#ff3366]" />
-            <span className="font-medium text-[#3c4f3d]/70 dark:text-white/70">
-              Thymine (T)
-            </span>
+            <span className="text-[#3c4f3d]/70 dark:text-white/70">T</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm bg-[#3366ff]" />
-            <span className="font-medium text-[#3c4f3d]/70 dark:text-white/70">
-              Guanine (G)
-            </span>
+            <span className="text-[#3c4f3d]/70 dark:text-white/70">G</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm bg-[#ffdd00]" />
-            <span className="font-medium text-[#3c4f3d]/70 dark:text-white/70">
-              Cytosine (C)
-            </span>
+            <span className="text-[#3c4f3d]/70 dark:text-white/70">C</span>
           </div>
-          {mutationPosition && (
-            <div className="ml-auto flex items-center gap-2 rounded-full bg-red-100 px-3 py-1 dark:bg-red-950/50">
-              <div className="h-3 w-3 animate-pulse rounded-full bg-red-500" />
-              <span className="font-semibold text-red-700 dark:text-red-400">
-                Mutation Site
-              </span>
-            </div>
-          )}
         </div>
       </div>
     </div>
