@@ -40,7 +40,7 @@ export function VariantRecommendationsPanel({
   const [expandedVariant, setExpandedVariant] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleAnalyzeVariant = (variant: PopulationVariant) => {
+  const handleAnalyzeVariant = async (variant: PopulationVariant) => {
     if (!variant.gnomadId) return;
 
     // Parse gnomadId: format is "chromosome-position-ref-alt" (e.g., "17-43063907-G-GC")
@@ -51,7 +51,8 @@ export function VariantRecommendationsPanel({
       const alt = parts[3];
 
       // Navigate to gene viewer with query parameters
-      router.push(`/app/gene/${variant.gene}?genome=hg38&position=${position}&alt=${alt}&chromosome=chr${chromosome}`);
+      // Use window.location for a full page navigation to ensure fresh state
+      window.location.href = `/app/gene/${encodeURIComponent(variant.gene)}?genome=hg38&position=${position}&alt=${alt}&chromosome=chr${chromosome}`;
     }
   };
 
