@@ -1,11 +1,82 @@
 "use client";
 
 import { useState } from "react";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  ZoomableGroup,
+} from "react-simple-maps";
 
 interface AfricaAncestryMapProps {
   selectedAncestry: string;
   onAncestrySelect: (ancestry: string) => void;
 }
+
+// Map countries to regions and ancestries
+const COUNTRY_TO_REGION: Record<string, string> = {
+  // North Africa
+  "Egypt": "north-africa",
+  "Libya": "north-africa",
+  "Tunisia": "north-africa",
+  "Algeria": "north-africa",
+  "Morocco": "north-africa",
+  "Western Sahara": "north-africa",
+
+  // West Africa
+  "Nigeria": "west-africa",
+  "Ghana": "west-africa",
+  "Senegal": "west-africa",
+  "Mali": "west-africa",
+  "Burkina Faso": "west-africa",
+  "Niger": "west-africa",
+  "Ivory Coast": "west-africa",
+  "Côte d'Ivoire": "west-africa",
+  "Guinea": "west-africa",
+  "Benin": "west-africa",
+  "Togo": "west-africa",
+  "Sierra Leone": "west-africa",
+  "Liberia": "west-africa",
+  "Mauritania": "west-africa",
+  "Gambia": "west-africa",
+  "Guinea-Bissau": "west-africa",
+
+  // East Africa
+  "Kenya": "east-africa",
+  "Ethiopia": "east-africa",
+  "Somalia": "east-africa",
+  "Tanzania": "east-africa",
+  "Uganda": "east-africa",
+  "Rwanda": "east-africa",
+  "Burundi": "east-africa",
+  "Eritrea": "east-africa",
+  "Djibouti": "east-africa",
+  "South Sudan": "east-africa",
+
+  // Central Africa
+  "Democratic Republic of the Congo": "central-africa",
+  "Dem. Rep. Congo": "central-africa",
+  "Congo": "central-africa",
+  "Cameroon": "central-africa",
+  "Central African Republic": "central-africa",
+  "Chad": "central-africa",
+  "Gabon": "central-africa",
+  "Equatorial Guinea": "central-africa",
+
+  // South Africa
+  "South Africa": "south-africa",
+  "Namibia": "south-africa",
+  "Botswana": "south-africa",
+  "Zimbabwe": "south-africa",
+  "Zambia": "south-africa",
+  "Mozambique": "south-africa",
+  "Malawi": "south-africa",
+  "Angola": "south-africa",
+  "Lesotho": "south-africa",
+  "Swaziland": "south-africa",
+  "Eswatini": "south-africa",
+  "Madagascar": "south-africa",
+};
 
 // Map regions to ancestry values
 const REGION_TO_ANCESTRY: Record<string, { value: string; label: string }[]> = {
@@ -35,11 +106,41 @@ const REGION_TO_ANCESTRY: Record<string, { value: string; label: string }[]> = {
   ],
 };
 
-export function AfricaAncestryMap({ selectedAncestry, onAncestrySelect }: AfricaAncestryMapProps) {
-  const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
-  const [showRegionOptions, setShowRegionOptions] = useState<string | null>(null);
+const REGION_LABELS: Record<string, string> = {
+  "north-africa": "North Africa",
+  "west-africa": "West Africa",
+  "east-africa": "East Africa",
+  "central-africa": "Central Africa",
+  "south-africa": "Southern Africa",
+};
 
-  const handleRegionClick = (region: string) => {
+// TopoJSON URL for world map (we'll filter for Africa)
+const WORLD_TOPO_JSON = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+
+export function AfricaAncestryMap({ selectedAncestry, onAncestrySelect }: AfricaAncestryMapProps) {
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [showRegionOptions, setShowRegionOptions] = useState<string | null>(null);
+  const [tooltipContent, setTooltipContent] = useState<string>("");
+
+  const getRegionFromCountry = (countryName: string): string | null => {
+    return COUNTRY_TO_REGION[countryName] || null;
+  };
+
+  const getSelectedRegion = (): string | null => {
+    for (const [region, ancestries] of Object.entries(REGION_TO_ANCESTRY)) {
+      if (ancestries.some(a => a.value === selectedAncestry)) {
+        return region;
+      }
+    }
+    return null;
+  };
+
+  const handleCountryClick = (geo: any) => {
+    const countryName = geo.properties.name;
+    const region = getRegionFromCountry(countryName);
+
+    if (!region) return;
+
     const options = REGION_TO_ANCESTRY[region];
     if (options && options.length === 1) {
       // If only one option, select it directly
@@ -51,137 +152,86 @@ export function AfricaAncestryMap({ selectedAncestry, onAncestrySelect }: Africa
     }
   };
 
-  const getRegionColor = (region: string) => {
-    const options = REGION_TO_ANCESTRY[region];
-    const isSelected = options?.some(opt => opt.value === selectedAncestry);
-    const isHovered = hoveredRegion === region;
+  const getCountryFill = (geo: any): string => {
+    const countryName = geo.properties.name;
+    const region = getRegionFromCountry(countryName);
+    const selectedRegion = getSelectedRegion();
 
-    if (isSelected) return "#de8246"; // Brand orange
-    if (isHovered) return "#3c4f3d"; // Brand dark green
-    return "#e9eeea"; // Default light background
-  };
+    if (!region) return "#f0f0f0"; // Non-African countries
 
-  const getRegionStroke = (region: string) => {
-    const options = REGION_TO_ANCESTRY[region];
-    const isSelected = options?.some(opt => opt.value === selectedAncestry);
-    return isSelected ? "#de8246" : "#3c4f3d";
+    if (region === selectedRegion) return "#de8246"; // Selected region (brand orange)
+    if (hoveredCountry === countryName) return "#3c4f3d"; // Hovered (brand dark green)
+
+    return "#e9eeea"; // Default (brand light background)
   };
 
   return (
     <div className="relative">
-      {/* SVG Map */}
-      <svg
-        viewBox="0 0 800 900"
-        className="w-full max-w-2xl mx-auto"
-        style={{ maxHeight: "500px" }}
-      >
-        {/* North Africa */}
-        <path
-          d="M 100,100 L 700,100 L 700,250 L 100,250 Z"
-          fill={getRegionColor("north-africa")}
-          stroke={getRegionStroke("north-africa")}
-          strokeWidth="2"
-          className="cursor-pointer transition-all duration-200"
-          onMouseEnter={() => setHoveredRegion("north-africa")}
-          onMouseLeave={() => setHoveredRegion(null)}
-          onClick={() => handleRegionClick("north-africa")}
-        />
-        <text
-          x="400"
-          y="175"
-          textAnchor="middle"
-          className="fill-[#3c4f3d] dark:fill-white text-sm font-medium pointer-events-none"
+      {/* Map Container */}
+      <div className="rounded-lg border border-[#3c4f3d]/10 dark:border-[#3c4f3d]/20 bg-white dark:bg-[#242924] p-4">
+        <ComposableMap
+          projection="geoMercator"
+          projectionConfig={{
+            scale: 400,
+            center: [20, 0], // Center on Africa
+          }}
+          width={800}
+          height={600}
+          className="w-full h-auto"
         >
-          North Africa
-        </text>
+          <ZoomableGroup center={[20, 0]} zoom={1}>
+            <Geographies geography={WORLD_TOPO_JSON}>
+              {({ geographies }) =>
+                geographies
+                  .filter(geo => COUNTRY_TO_REGION[geo.properties.name])
+                  .map((geo) => {
+                    const countryName = geo.properties.name;
+                    const region = getRegionFromCountry(countryName);
 
-        {/* West Africa */}
-        <path
-          d="M 100,250 L 400,250 L 400,500 L 100,500 Z"
-          fill={getRegionColor("west-africa")}
-          stroke={getRegionStroke("west-africa")}
-          strokeWidth="2"
-          className="cursor-pointer transition-all duration-200"
-          onMouseEnter={() => setHoveredRegion("west-africa")}
-          onMouseLeave={() => setHoveredRegion(null)}
-          onClick={() => handleRegionClick("west-africa")}
-        />
-        <text
-          x="250"
-          y="375"
-          textAnchor="middle"
-          className="fill-[#3c4f3d] dark:fill-white text-sm font-medium pointer-events-none"
-        >
-          West Africa
-        </text>
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        fill={getCountryFill(geo)}
+                        stroke="#3c4f3d"
+                        strokeWidth={0.5}
+                        style={{
+                          default: { outline: "none" },
+                          hover: { outline: "none", cursor: "pointer" },
+                          pressed: { outline: "none" },
+                        }}
+                        onMouseEnter={() => {
+                          setHoveredCountry(countryName);
+                          const regionLabel = region ? REGION_LABELS[region] : "";
+                          setTooltipContent(`${countryName}${regionLabel ? ` (${regionLabel})` : ""}`);
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredCountry(null);
+                          setTooltipContent("");
+                        }}
+                        onClick={() => handleCountryClick(geo)}
+                      />
+                    );
+                  })
+              }
+            </Geographies>
+          </ZoomableGroup>
+        </ComposableMap>
 
-        {/* Central Africa */}
-        <path
-          d="M 400,250 L 550,250 L 550,500 L 400,500 Z"
-          fill={getRegionColor("central-africa")}
-          stroke={getRegionStroke("central-africa")}
-          strokeWidth="2"
-          className="cursor-pointer transition-all duration-200"
-          onMouseEnter={() => setHoveredRegion("central-africa")}
-          onMouseLeave={() => setHoveredRegion(null)}
-          onClick={() => handleRegionClick("central-africa")}
-        />
-        <text
-          x="475"
-          y="375"
-          textAnchor="middle"
-          className="fill-[#3c4f3d] dark:fill-white text-sm font-medium pointer-events-none"
-        >
-          Central
-        </text>
-
-        {/* East Africa */}
-        <path
-          d="M 550,250 L 700,250 L 700,500 L 550,500 Z"
-          fill={getRegionColor("east-africa")}
-          stroke={getRegionStroke("east-africa")}
-          strokeWidth="2"
-          className="cursor-pointer transition-all duration-200"
-          onMouseEnter={() => setHoveredRegion("east-africa")}
-          onMouseLeave={() => setHoveredRegion(null)}
-          onClick={() => handleRegionClick("east-africa")}
-        />
-        <text
-          x="625"
-          y="375"
-          textAnchor="middle"
-          className="fill-[#3c4f3d] dark:fill-white text-sm font-medium pointer-events-none"
-        >
-          East Africa
-        </text>
-
-        {/* South Africa */}
-        <path
-          d="M 250,500 L 550,500 L 550,700 L 250,700 Z"
-          fill={getRegionColor("south-africa")}
-          stroke={getRegionStroke("south-africa")}
-          strokeWidth="2"
-          className="cursor-pointer transition-all duration-200"
-          onMouseEnter={() => setHoveredRegion("south-africa")}
-          onMouseLeave={() => setHoveredRegion(null)}
-          onClick={() => handleRegionClick("south-africa")}
-        />
-        <text
-          x="400"
-          y="600"
-          textAnchor="middle"
-          className="fill-[#3c4f3d] dark:fill-white text-sm font-medium pointer-events-none"
-        >
-          South Africa
-        </text>
-      </svg>
+        {/* Tooltip */}
+        {tooltipContent && (
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-[#3c4f3d] text-white px-3 py-1.5 rounded-md text-sm shadow-lg pointer-events-none z-10">
+            {tooltipContent}
+          </div>
+        )}
+      </div>
 
       {/* Region Options Popup */}
       {showRegionOptions && (
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/20 rounded-lg backdrop-blur-sm">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg backdrop-blur-sm z-20">
           <div className="bg-white dark:bg-[#242924] rounded-lg p-4 shadow-xl border border-[#3c4f3d]/10 dark:border-[#3c4f3d]/20 max-w-xs w-full mx-4">
             <h3 className="text-sm font-semibold text-[#3c4f3d] dark:text-white mb-3">
-              Select Your Ancestry
+              Select Your Ancestry in {REGION_LABELS[showRegionOptions]}
             </h3>
             <div className="space-y-2">
               {REGION_TO_ANCESTRY[showRegionOptions]?.map((option) => (
@@ -208,8 +258,20 @@ export function AfricaAncestryMap({ selectedAncestry, onAncestrySelect }: Africa
       )}
 
       {/* Legend */}
-      <div className="mt-4 text-xs text-[#3c4f3d]/60 dark:text-white/60 text-center">
-        Click on a region to select your ancestry
+      <div className="mt-4 space-y-2">
+        <div className="text-xs text-[#3c4f3d]/60 dark:text-white/60 text-center">
+          Click on any African country to select your ancestry
+        </div>
+        <div className="flex items-center justify-center gap-4 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-sm bg-[#de8246]"></div>
+            <span className="text-[#3c4f3d]/60 dark:text-white/60">Selected Region</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-sm bg-[#3c4f3d]"></div>
+            <span className="text-[#3c4f3d]/60 dark:text-white/60">Hover</span>
+          </div>
+        </div>
       </div>
     </div>
   );
