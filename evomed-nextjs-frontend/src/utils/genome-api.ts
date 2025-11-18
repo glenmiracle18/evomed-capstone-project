@@ -185,26 +185,46 @@ export async function searchGenes(query: string, genome: string) {
   if (data[0] > 0) {
     const fieldMap = data[2];
     const geneIds = fieldMap.GeneID || [];
+    const symbols = fieldMap.Symbol || [];
+    const chromosomes = fieldMap.chromosome || [];
+    const descriptions = fieldMap.description || [];
+
+    console.log(`[searchGenes] Found ${data[0]} results for query: ${query}`);
+    console.log(`[searchGenes] GeneIDs available:`, geneIds.length);
+
     for (let i = 0; i < Math.min(10, data[0]); ++i) {
       if (i < data[3].length) {
         try {
           const display = data[3][i];
-          let chrom = display[0];
+          let chrom = chromosomes[i] || display[0];
           if (chrom && !chrom.startsWith("chr")) {
             chrom = `chr${chrom}`;
           }
+
+          const geneId = geneIds[i] || "";
+          const symbol = symbols[i] || display[2] || "";
+
+          if (!geneId) {
+            console.warn(`[searchGenes] Missing gene_id for ${symbol} at index ${i}`);
+          }
+
           results.push({
-            symbol: display[2],
-            name: display[3],
+            symbol: symbol,
+            name: descriptions[i] || display[3] || "",
             chrom,
-            description: display[3],
-            gene_id: geneIds[i] || "",
+            description: descriptions[i] || display[3] || "",
+            gene_id: geneId,
           });
-        } catch {
+
+          console.log(`[searchGenes] Added: ${symbol} (ID: ${geneId || 'MISSING'})`);
+        } catch (error) {
+          console.error(`[searchGenes] Error parsing result at index ${i}:`, error);
           continue;
         }
       }
     }
+  } else {
+    console.log(`[searchGenes] No results found for query: ${query}`);
   }
 
   return { query, genome, results };
