@@ -1,7 +1,7 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Text, PerspectiveCamera } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, Text, PerspectiveCamera, MeshDistortMaterial, Sphere } from "@react-three/drei";
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
 
@@ -14,15 +14,14 @@ interface DNAHelix3DProps {
   startPosition?: number;
 }
 
-// Base pair colors (scientifically accurate)
+// Enhanced base pair colors with more vibrant tones
 const BASE_COLORS = {
-  A: "#00ff00", // Adenine - Green
-  T: "#ff0000", // Thymine - Red
-  G: "#0000ff", // Guanine - Blue
-  C: "#ffff00", // Cytosine - Yellow
+  A: "#00ff88", // Adenine - Bright Green
+  T: "#ff3366", // Thymine - Bright Red
+  G: "#3366ff", // Guanine - Bright Blue
+  C: "#ffdd00", // Cytosine - Bright Yellow
 };
 
-// Complementary base pairs
 const COMPLEMENT: Record<string, string> = {
   A: "T",
   T: "A",
@@ -30,6 +29,52 @@ const COMPLEMENT: Record<string, string> = {
   C: "G",
 };
 
+// Animated mutation particle effect
+function MutationParticles({ position }: { position: [number, number, number] }) {
+  const particlesRef = useRef<THREE.Points>(null);
+
+  useFrame(({ clock }) => {
+    if (particlesRef.current) {
+      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.5;
+    }
+  });
+
+  const particles = useMemo(() => {
+    const positions = [];
+    for (let i = 0; i < 50; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const radius = 0.3 + Math.random() * 0.5;
+      positions.push(
+        Math.cos(theta) * radius,
+        (Math.random() - 0.5) * 0.5,
+        Math.sin(theta) * radius
+      );
+    }
+    return new Float32Array(positions);
+  }, []);
+
+  return (
+    <points ref={particlesRef} position={position}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={particles.length / 3}
+          array={particles}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.05}
+        color="#ff0000"
+        transparent
+        opacity={0.8}
+        sizeAttenuation
+      />
+    </points>
+  );
+}
+
+// Enhanced base pair with better materials and mutation effects
 function BasePair({
   base1,
   base2,
@@ -48,79 +93,169 @@ function BasePair({
   onClick: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+  const mutationRef = useRef<THREE.Mesh>(null);
+
+  // Animate mutation pulsing
+  useFrame(({ clock }) => {
+    if (isMutation && mutationRef.current) {
+      const scale = 1 + Math.sin(clock.getElapsedTime() * 3) * 0.15;
+      mutationRef.current.scale.set(scale, scale, scale);
+    }
+    if (isMutation && groupRef.current) {
+      // Slight wobble for mutation
+      groupRef.current.rotation.z = Math.sin(clock.getElapsedTime() * 2) * 0.1;
+    }
+  });
 
   const color1 = BASE_COLORS[base1 as keyof typeof BASE_COLORS] || "#888888";
   const color2 = BASE_COLORS[base2 as keyof typeof BASE_COLORS] || "#888888";
 
+  // Mutation distorts the structure
+  const distortion = isMutation ? 0.4 : 0;
+
   return (
-    <group position={[0, yPosition, 0]} rotation={[0, rotation, 0]}>
-      {/* Strand 1 backbone sphere */}
-      <mesh position={[2, 0, 0]}>
-        <sphereGeometry args={[0.15, 16, 16]} />
+    <group ref={groupRef} position={[0, yPosition, 0]} rotation={[0, rotation, 0]}>
+      {/* Enhanced backbone spheres with metallic material */}
+      <mesh position={[2.2, 0, 0]}>
+        <sphereGeometry args={[0.18, 32, 32]} />
         <meshStandardMaterial
-          color={isMutation ? "#de8246" : "#3c4f3d"}
-          emissive={isMutation ? "#de8246" : "#000000"}
-          emissiveIntensity={isMutation ? 0.5 : 0}
+          color={isMutation ? "#ff3366" : "#2d3d2e"}
+          emissive={isMutation ? "#ff0000" : "#000000"}
+          emissiveIntensity={isMutation ? 1.2 : 0}
+          metalness={0.7}
+          roughness={0.3}
         />
       </mesh>
 
-      {/* Strand 2 backbone sphere */}
-      <mesh position={[-2, 0, 0]}>
-        <sphereGeometry args={[0.15, 16, 16]} />
+      <mesh position={[-2.2, 0, 0]}>
+        <sphereGeometry args={[0.18, 32, 32]} />
         <meshStandardMaterial
-          color={isMutation ? "#de8246" : "#3c4f3d"}
-          emissive={isMutation ? "#de8246" : "#000000"}
-          emissiveIntensity={isMutation ? 0.5 : 0}
+          color={isMutation ? "#ff3366" : "#2d3d2e"}
+          emissive={isMutation ? "#ff0000" : "#000000"}
+          emissiveIntensity={isMutation ? 1.2 : 0}
+          metalness={0.7}
+          roughness={0.3}
         />
       </mesh>
 
-      {/* Base 1 (right side) */}
+      {/* Connecting backbone tubes for continuous strand appearance */}
+      {position % 2 === 0 && (
+        <>
+          <mesh position={[2.2, 0.15, 0]} rotation={[0, rotation * 0.2, 0]}>
+            <cylinderGeometry args={[0.08, 0.08, 0.3, 16]} />
+            <meshStandardMaterial
+              color={isMutation ? "#ff3366" : "#3c4f3d"}
+              metalness={0.5}
+              roughness={0.4}
+            />
+          </mesh>
+          <mesh position={[-2.2, 0.15, 0]} rotation={[0, rotation * 0.2, 0]}>
+            <cylinderGeometry args={[0.08, 0.08, 0.3, 16]} />
+            <meshStandardMaterial
+              color={isMutation ? "#ff3366" : "#3c4f3d"}
+              metalness={0.5}
+              roughness={0.4}
+            />
+          </mesh>
+        </>
+      )}
+
+      {/* Enhanced base representations with better geometry */}
       <mesh
-        position={[1.3, 0, 0]}
+        position={[1.4, 0, 0]}
         onClick={onClick}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <boxGeometry args={[0.6, 0.2, 0.2]} />
+        <boxGeometry args={[0.7, 0.25, 0.25]} />
         <meshStandardMaterial
           color={color1}
-          emissive={isMutation ? "#ff0000" : hovered ? "#ffffff" : "#000000"}
-          emissiveIntensity={isMutation ? 0.8 : hovered ? 0.3 : 0}
+          emissive={isMutation ? "#ff6600" : hovered ? color1 : "#000000"}
+          emissiveIntensity={isMutation ? 0.9 : hovered ? 0.4 : 0}
+          metalness={0.6}
+          roughness={0.2}
         />
       </mesh>
 
-      {/* Base 2 (left side) */}
       <mesh
-        position={[-1.3, 0, 0]}
+        position={[-1.4, 0, 0]}
         onClick={onClick}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <boxGeometry args={[0.6, 0.2, 0.2]} />
+        <boxGeometry args={[0.7, 0.25, 0.25]} />
         <meshStandardMaterial
           color={color2}
-          emissive={isMutation ? "#ff0000" : hovered ? "#ffffff" : "#000000"}
-          emissiveIntensity={isMutation ? 0.8 : hovered ? 0.3 : 0}
+          emissive={isMutation ? "#ff6600" : hovered ? color2 : "#000000"}
+          emissiveIntensity={isMutation ? 0.9 : hovered ? 0.4 : 0}
+          metalness={0.6}
+          roughness={0.2}
         />
       </mesh>
 
-      {/* Connecting hydrogen bonds */}
-      <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.05, 0.05, 2.6, 8]} />
-        <meshStandardMaterial
-          color={isMutation ? "#ff6b6b" : "#cccccc"}
-          opacity={0.6}
-          transparent
-        />
-      </mesh>
+      {/* Hydrogen bonds - break/distort for mutations */}
+      {isMutation ? (
+        <>
+          {/* Broken bonds for mutation */}
+          <mesh position={[0.5, 0, 0]} rotation={[0, 0, Math.PI / 6]}>
+            <cylinderGeometry args={[0.06, 0.06, 1.5, 8]} />
+            <meshStandardMaterial
+              color="#ff0000"
+              opacity={0.7}
+              transparent
+              emissive="#ff0000"
+              emissiveIntensity={0.8}
+            />
+          </mesh>
+          <mesh position={[-0.5, 0, 0]} rotation={[0, 0, -Math.PI / 6]}>
+            <cylinderGeometry args={[0.06, 0.06, 1.5, 8]} />
+            <meshStandardMaterial
+              color="#ff0000"
+              opacity={0.7}
+              transparent
+              emissive="#ff0000"
+              emissiveIntensity={0.8}
+            />
+          </mesh>
+          {/* Mutation marker - glowing sphere */}
+          <mesh ref={mutationRef} position={[0, 0, 0]}>
+            <sphereGeometry args={[0.35, 32, 32]} />
+            <meshStandardMaterial
+              color="#ff3366"
+              emissive="#ff0000"
+              emissiveIntensity={1.5}
+              transparent
+              opacity={0.6}
+              metalness={0.8}
+              roughness={0.1}
+            />
+          </mesh>
+          {/* Mutation particles */}
+          <MutationParticles position={[0, 0, 0]} />
+        </>
+      ) : (
+        /* Normal hydrogen bonds */
+        <mesh position={[0, 0, 0]}>
+          <cylinderGeometry args={[0.06, 0.06, 2.8, 16]} />
+          <meshStandardMaterial
+            color="#b0b0b0"
+            opacity={0.7}
+            transparent
+            metalness={0.4}
+            roughness={0.5}
+          />
+        </mesh>
+      )}
 
-      {/* Position label (only show every 10th) */}
+      {/* Position labels */}
       {position % 10 === 0 && (
         <Text
-          position={[3, 0, 0]}
-          fontSize={0.15}
-          color={isMutation ? "#de8246" : "#3c4f3d"}
+          position={[3.2, 0, 0]}
+          fontSize={0.18}
+          color={isMutation ? "#ff3366" : "#3c4f3d"}
           anchorX="left"
+          font="/fonts/inter-bold.woff"
         >
           {position}
         </Text>
@@ -140,15 +275,24 @@ function Helix({
   startPosition?: number;
   onBaseClick: (position: number, base: string) => void;
 }) {
-  // Limit to first 100 bases for performance
-  const displaySequence = sequence.slice(0, 100).toUpperCase();
+  const helixRef = useRef<THREE.Group>(null);
+
+  // Subtle rotation animation
+  useFrame(() => {
+    if (helixRef.current) {
+      helixRef.current.rotation.y += 0.001;
+    }
+  });
+
+  // Display first 80 bases for better performance with enhanced graphics
+  const displaySequence = sequence.slice(0, 80).toUpperCase();
 
   const basePairs = useMemo(() => {
     return displaySequence.split("").map((base, index) => {
       const position = startPosition + index;
       const complement = COMPLEMENT[base] || "N";
-      const rotation = (index * Math.PI) / 5; // Twist angle
-      const yPosition = index * 0.3; // Vertical spacing
+      const rotation = (index * Math.PI) / 5; // Twist angle for double helix
+      const yPosition = index * 0.35; // Vertical spacing
       const isMutation = mutationPosition !== null && position === mutationPosition;
 
       return {
@@ -163,7 +307,7 @@ function Helix({
   }, [displaySequence, mutationPosition, startPosition]);
 
   return (
-    <>
+    <group ref={helixRef}>
       {basePairs.map((bp, index) => (
         <BasePair
           key={index}
@@ -171,7 +315,7 @@ function Helix({
           onClick={() => onBaseClick(bp.position, bp.base1)}
         />
       ))}
-    </>
+    </group>
   );
 }
 
@@ -194,47 +338,78 @@ export function DNAHelix3D({
 
   if (!sequence || sequence.length === 0) {
     return (
-      <div className="flex h-96 items-center justify-center rounded-lg border border-[#3c4f3d]/10 bg-white dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
+      <div className="flex h-[500px] items-center justify-center rounded-lg border border-[#3c4f3d]/10 bg-white dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
         <p className="text-sm text-[#3c4f3d]/60 dark:text-white/60">
-          No sequence data available for 3D visualization
+          Load a gene sequence to view 3D DNA structure
         </p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-[#3c4f3d]/10 bg-white dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
+    <div className="rounded-lg border border-[#3c4f3d]/10 bg-white shadow-lg dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
       {/* Header */}
       <div className="border-b border-[#3c4f3d]/10 p-4 dark:border-[#3c4f3d]/20">
         <h3 className="text-lg font-semibold text-[#3c4f3d] dark:text-white">
-          3D DNA Helix Visualization {geneName && `- ${geneName}`}
+          🧬 3D DNA Structure {geneName && `- ${geneName}`}
         </h3>
-        {mutationPosition && (
+        {mutationPosition ? (
+          <div className="mt-2 rounded-lg bg-red-50 p-3 dark:bg-red-950/30">
+            <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+              ⚠️ Genetic Mutation Detected
+            </p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-300">
+              Position {mutationPosition}:{" "}
+              <span className="font-mono font-bold">
+                {referenceBase} → {alternateBase}
+              </span>
+            </p>
+            <p className="mt-1 text-xs text-red-500 dark:text-red-400">
+              Structure disruption visible in the 3D model
+            </p>
+          </div>
+        ) : (
           <p className="mt-1 text-sm text-[#3c4f3d]/70 dark:text-white/70">
-            Mutation at position {mutationPosition}:{" "}
-            <span className="font-mono font-semibold text-[#de8246]">
-              {referenceBase} → {alternateBase}
-            </span>
+            Interactive visualization of the double helix structure
           </p>
         )}
       </div>
 
       {/* 3D Canvas */}
-      <div className="relative h-96">
-        <Canvas>
-          <PerspectiveCamera makeDefault position={[8, 15, 8]} />
+      <div className="relative h-[500px] bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-[#242924]">
+        <Canvas shadows>
+          <PerspectiveCamera makeDefault position={[10, 14, 10]} fov={50} />
           <OrbitControls
             enableZoom={true}
             enablePan={true}
             enableRotate={true}
             autoRotate={true}
-            autoRotateSpeed={0.5}
+            autoRotateSpeed={1.0}
+            minDistance={5}
+            maxDistance={25}
           />
 
-          {/* Lighting */}
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 5]} intensity={1} />
-          <pointLight position={[-10, -10, -5]} intensity={0.5} />
+          {/* Enhanced Lighting Setup */}
+          <ambientLight intensity={0.6} />
+          <directionalLight
+            position={[10, 15, 5]}
+            intensity={1.2}
+            castShadow
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+          />
+          <pointLight position={[-10, -10, -5]} intensity={0.8} color="#4488ff" />
+          <pointLight position={[10, 5, -10]} intensity={0.6} color="#ff8844" />
+          <spotLight
+            position={[0, 20, 0]}
+            angle={0.3}
+            penumbra={1}
+            intensity={0.5}
+            castShadow
+          />
+
+          {/* Fog for depth */}
+          <fog attach="fog" args={["#f8fafc", 15, 35]} />
 
           {/* DNA Helix */}
           <Helix
@@ -243,52 +418,86 @@ export function DNAHelix3D({
             startPosition={startPosition}
             onBaseClick={handleBaseClick}
           />
+
+          {/* Ground plane for better depth perception */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
+            <planeGeometry args={[50, 50]} />
+            <meshStandardMaterial
+              color="#e2e8f0"
+              opacity={0.3}
+              transparent
+              roughness={0.8}
+            />
+          </mesh>
         </Canvas>
 
         {/* Info Panel */}
         {selectedBase && (
-          <div className="absolute bottom-4 left-4 rounded-lg border border-[#3c4f3d]/20 bg-white/95 p-3 shadow-lg dark:bg-[#242924]/95">
-            <div className="text-xs text-[#3c4f3d]/60 dark:text-white/60">
-              Selected Base
+          <div className="absolute bottom-4 left-4 rounded-lg border border-[#3c4f3d]/20 bg-white/95 p-4 shadow-xl backdrop-blur-sm dark:border-[#3c4f3d]/40 dark:bg-[#242924]/95">
+            <div className="text-xs font-semibold text-[#3c4f3d]/60 dark:text-white/60">
+              SELECTED BASE PAIR
             </div>
-            <div className="mt-1 font-mono text-sm font-semibold text-[#3c4f3d] dark:text-white">
+            <div className="mt-2 font-mono text-lg font-bold text-[#3c4f3d] dark:text-white">
               Position: {selectedBase.position}
             </div>
-            <div className="font-mono text-sm font-semibold text-[#3c4f3d] dark:text-white">
-              Base: {selectedBase.base} (pairs with {COMPLEMENT[selectedBase.base]})
+            <div className="mt-1 flex items-center gap-2">
+              <div
+                className="h-4 w-4 rounded"
+                style={{
+                  backgroundColor:
+                    BASE_COLORS[selectedBase.base as keyof typeof BASE_COLORS],
+                }}
+              />
+              <span className="font-mono text-sm font-semibold text-[#3c4f3d] dark:text-white">
+                {selectedBase.base} - {COMPLEMENT[selectedBase.base]}
+              </span>
             </div>
           </div>
         )}
+
+        {/* Controls hint */}
+        <div className="absolute bottom-4 right-4 rounded-lg bg-black/60 px-3 py-2 text-xs text-white backdrop-blur-sm">
+          <div>🖱️ Drag to rotate</div>
+          <div>🔍 Scroll to zoom</div>
+          <div>👆 Click bases for info</div>
+        </div>
       </div>
 
       {/* Legend */}
       <div className="border-t border-[#3c4f3d]/10 p-4 dark:border-[#3c4f3d]/20">
-        <div className="flex items-center gap-6 text-xs">
+        <div className="flex flex-wrap items-center gap-4 text-xs">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-[#00ff00]" />
-            <span className="text-[#3c4f3d]/70 dark:text-white/70">A (Adenine)</span>
+            <div className="h-3 w-3 rounded-sm bg-[#00ff88]" />
+            <span className="font-medium text-[#3c4f3d]/70 dark:text-white/70">
+              Adenine (A)
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-[#ff0000]" />
-            <span className="text-[#3c4f3d]/70 dark:text-white/70">T (Thymine)</span>
+            <div className="h-3 w-3 rounded-sm bg-[#ff3366]" />
+            <span className="font-medium text-[#3c4f3d]/70 dark:text-white/70">
+              Thymine (T)
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-[#0000ff]" />
-            <span className="text-[#3c4f3d]/70 dark:text-white/70">G (Guanine)</span>
+            <div className="h-3 w-3 rounded-sm bg-[#3366ff]" />
+            <span className="font-medium text-[#3c4f3d]/70 dark:text-white/70">
+              Guanine (G)
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-[#ffff00]" />
-            <span className="text-[#3c4f3d]/70 dark:text-white/70">C (Cytosine)</span>
+            <div className="h-3 w-3 rounded-sm bg-[#ffdd00]" />
+            <span className="font-medium text-[#3c4f3d]/70 dark:text-white/70">
+              Cytosine (C)
+            </span>
           </div>
           {mutationPosition && (
-            <div className="ml-auto flex items-center gap-2">
-              <div className="h-3 w-3 rounded-sm bg-[#de8246]" />
-              <span className="text-[#3c4f3d]/70 dark:text-white/70">Mutation</span>
+            <div className="ml-auto flex items-center gap-2 rounded-full bg-red-100 px-3 py-1 dark:bg-red-950/50">
+              <div className="h-3 w-3 animate-pulse rounded-full bg-red-500" />
+              <span className="font-semibold text-red-700 dark:text-red-400">
+                Mutation Site
+              </span>
             </div>
           )}
-        </div>
-        <div className="mt-2 text-xs text-[#3c4f3d]/50 dark:text-white/50">
-          Drag to rotate • Scroll to zoom • Click base pairs for details
         </div>
       </div>
     </div>
