@@ -24,10 +24,14 @@ export default function GeneViewer({
   gene,
   genomeId,
   onClose,
+  initialVariantPosition,
+  initialVariantAlt,
 }: {
   gene: GeneFromSearch;
   genomeId: string;
   onClose: () => void;
+  initialVariantPosition?: string | null;
+  initialVariantAlt?: string | null;
 }) {
   const [geneSequence, setGeneSequence] = useState("");
   const [geneDetail, setGeneDetail] = useState<GeneDetailsFromSearch | null>(
@@ -55,10 +59,13 @@ export default function GeneViewer({
 
   const [activeSequencePosition, setActiveSequencePosition] = useState<
     number | null
-  >(null);
+  >(initialVariantPosition ? parseInt(initialVariantPosition) : null);
   const [activeReferenceNucleotide, setActiveReferenceNucleotide] = useState<
     string | null
   >(null);
+  const [prefilledAlt, setPrefilledAlt] = useState<string | null>(
+    initialVariantAlt || null
+  );
 
   // African Population Adjustment state
   const [useAfricanAdjustment, setUseAfricanAdjustment] = useState(true);
@@ -263,6 +270,7 @@ export default function GeneViewer({
             geneBounds={geneBounds}
             useAfricanAdjustment={useAfricanAdjustment}
             onUseAfricanAdjustmentChange={setUseAfricanAdjustment}
+            initialAlt={prefilledAlt}
           />
 
           <GeneInformation

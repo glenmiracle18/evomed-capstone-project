@@ -6,12 +6,12 @@ const isProtectedRoute = createRouteMatcher(['/app(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
-  
-  // If user is signed in and on landing page, redirect to app
+
+  // If user is signed in and on landing page, redirect to pre-screening
   if (userId && req.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL('/app', req.url));
+    return NextResponse.redirect(new URL('/app/pre-screening', req.url));
   }
-  
+
   // If user is not signed in and trying to access protected route, redirect to landing
   if (!userId && isProtectedRoute(req)) {
     return NextResponse.redirect(new URL('/', req.url));

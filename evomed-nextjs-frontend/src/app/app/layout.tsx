@@ -94,7 +94,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-[#3c4f3d]/60 transition-colors hover:bg-[#e9eeea] dark:text-white/60 dark:hover:bg-[#3c4f3d]/20"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#3c4f3d]/20 text-[#3c4f3d] transition-colors hover:border-[#de8246] hover:bg-[#de8246]/10 hover:text-[#de8246] dark:border-[#3c4f3d]/30 dark:text-white dark:hover:border-[#de8246] dark:hover:bg-[#de8246]/10"
             aria-label="Toggle theme"
           >
             {theme === "light" ? (
