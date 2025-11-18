@@ -43,20 +43,21 @@ export default function GenePage() {
 
           // If not found in results but we have chromosome from params, create fallback gene
           if (chromosome && !foundGene) {
-            // Common cancer genes with their chromosome locations
-            const commonGenes: Record<string, { chrom: string; description: string }> = {
-              'BRCA1': { chrom: 'chr17', description: 'BRCA1 DNA repair associated' },
-              'BRCA2': { chrom: 'chr13', description: 'BRCA2 DNA repair associated' },
-              'TP53': { chrom: 'chr17', description: 'Tumor protein p53' },
-              'PALB2': { chrom: 'chr16', description: 'Partner and localizer of BRCA2' },
-              'ATM': { chrom: 'chr11', description: 'ATM serine/threonine kinase' },
-              'CHEK2': { chrom: 'chr22', description: 'Checkpoint kinase 2' },
-              'CDH1': { chrom: 'chr16', description: 'Cadherin 1' },
-              'PTEN': { chrom: 'chr10', description: 'Phosphatase and tensin homolog' },
-              'STK11': { chrom: 'chr19', description: 'Serine/threonine kinase 11' },
-              'RAD51C': { chrom: 'chr17', description: 'RAD51 paralog C' },
-              'RAD51D': { chrom: 'chr17', description: 'RAD51 paralog D' },
-              'BARD1': { chrom: 'chr2', description: 'BRCA1 associated RING domain 1' },
+            // Common cancer genes with their chromosome locations and NCBI gene IDs
+            const commonGenes: Record<string, { chrom: string; description: string; gene_id: string }> = {
+              'BRCA1': { chrom: 'chr17', description: 'BRCA1 DNA repair associated', gene_id: '672' },
+              'BRCA2': { chrom: 'chr13', description: 'BRCA2 DNA repair associated', gene_id: '675' },
+              'TP53': { chrom: 'chr17', description: 'Tumor protein p53', gene_id: '7157' },
+              'PALB2': { chrom: 'chr16', description: 'Partner and localizer of BRCA2', gene_id: '79728' },
+              'ATM': { chrom: 'chr11', description: 'ATM serine/threonine kinase', gene_id: '472' },
+              'CHEK2': { chrom: 'chr22', description: 'Checkpoint kinase 2', gene_id: '11200' },
+              'CDH1': { chrom: 'chr16', description: 'Cadherin 1', gene_id: '999' },
+              'PTEN': { chrom: 'chr10', description: 'Phosphatase and tensin homolog', gene_id: '5728' },
+              'STK11': { chrom: 'chr19', description: 'Serine/threonine kinase 11', gene_id: '6794' },
+              'RAD51C': { chrom: 'chr17', description: 'RAD51 paralog C', gene_id: '5889' },
+              'RAD51D': { chrom: 'chr17', description: 'RAD51 paralog D', gene_id: '5892' },
+              'BARD1': { chrom: 'chr2', description: 'BRCA1 associated RING domain 1', gene_id: '580' },
+              'BRIP1': { chrom: 'chr17', description: 'BRCA1 interacting protein C-terminal helicase 1', gene_id: '83990' },
             };
 
             const geneInfo = commonGenes[geneSymbol.toUpperCase()];
@@ -66,7 +67,7 @@ export default function GenePage() {
                 name: geneInfo.description,
                 chrom: geneInfo.chrom,
                 description: geneInfo.description,
-                gene_id: '',
+                gene_id: geneInfo.gene_id,
               });
               return;
             }
