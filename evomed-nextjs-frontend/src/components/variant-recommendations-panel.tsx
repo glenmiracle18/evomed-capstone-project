@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import {
@@ -11,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { Dna, TrendingUp, AlertCircle, Download } from "lucide-react";
+import { Dna, TrendingUp, AlertCircle, Download, MousePointerClick } from "lucide-react";
 import { Button } from "~/components/ui/button";
 
 interface PopulationVariant {
@@ -37,6 +38,22 @@ export function VariantRecommendationsPanel({
   recommendedGenes,
 }: VariantRecommendationsPanelProps) {
   const [expandedVariant, setExpandedVariant] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleAnalyzeVariant = (variant: PopulationVariant) => {
+    if (!variant.gnomadId) return;
+
+    // Parse gnomadId: format is "chromosome-position-ref-alt" (e.g., "17-43063907-G-GC")
+    const parts = variant.gnomadId.split('-');
+    if (parts.length >= 4) {
+      const chromosome = parts[0];
+      const position = parts[1];
+      const alt = parts[3];
+
+      // Navigate to gene viewer with query parameters
+      router.push(`/app/gene/${variant.gene}?genome=hg38&position=${position}&alt=${alt}&chromosome=chr${chromosome}`);
+    }
+  };
 
   const getPathogenicityColor = (pathogenicity: string) => {
     if (pathogenicity.toLowerCase().includes("pathogenic")) {
@@ -187,6 +204,9 @@ NOTES:
                     <TableHead className="text-[#3c4f3d] dark:text-white/70">
                       Pathogenicity
                     </TableHead>
+                    <TableHead className="text-[#3c4f3d] dark:text-white/70">
+                      Action
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -231,10 +251,24 @@ NOTES:
                             {variant.pathogenicity}
                           </Badge>
                         </TableCell>
+                        <TableCell>
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAnalyzeVariant(variant);
+                            }}
+                            className="h-8 bg-[#de8246] text-white hover:bg-[#de8246]/90"
+                            disabled={!variant.gnomadId}
+                          >
+                            <MousePointerClick className="mr-1 h-3 w-3" />
+                            Analyze
+                          </Button>
+                        </TableCell>
                       </TableRow>
                       {expandedVariant === variant.variant && (
                         <TableRow>
-                          <TableCell colSpan={4} className="bg-[#e9eeea]/30 dark:bg-[#1a1f1a]/30">
+                          <TableCell colSpan={5} className="bg-[#e9eeea]/30 dark:bg-[#1a1f1a]/30">
                             <div className="space-y-2 py-2">
                               <div>
                                 <span className="text-xs font-medium text-[#3c4f3d]/70 dark:text-white/70">

@@ -40,6 +40,7 @@ interface VariantAnalysisProps {
   geneBounds: GeneBounds | null;
   useAfricanAdjustment: boolean;
   onUseAfricanAdjustmentChange: (value: boolean) => void;
+  initialAlt?: string | null;
 }
 
 const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
@@ -54,6 +55,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
       geneBounds,
       useAfricanAdjustment,
       onUseAfricanAdjustmentChange,
+      initialAlt,
     }: VariantAnalysisProps,
     ref,
   ) => {
@@ -61,7 +63,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
       geneBounds?.min?.toString() || "",
     );
     const [variantReference, setVariantReference] = useState("");
-    const [variantAlternative, setVariantAlternative] = useState("");
+    const [variantAlternative, setVariantAlternative] = useState(initialAlt || "");
     const [variantResult, setVariantResult] = useState<AnalysisResult | null>(
       null,
     );

@@ -17,6 +17,9 @@ export default function GenePage() {
 
   const geneSymbol = decodeURIComponent(params.symbol as string);
   const genomeId = searchParams.get("genome") || "hg38";
+  const variantPosition = searchParams.get("position");
+  const variantAlt = searchParams.get("alt");
+  const chromosome = searchParams.get("chromosome");
 
   useEffect(() => {
     const fetchGene = async () => {
@@ -109,7 +112,13 @@ export default function GenePage() {
 
   return (
     <div className="h-screen overflow-y-auto bg-[#e9eeea] dark:bg-[#1a1f1a]">
-      <GeneViewer gene={gene} genomeId={genomeId} onClose={handleClose} />
+      <GeneViewer
+        gene={gene}
+        genomeId={genomeId}
+        onClose={handleClose}
+        initialVariantPosition={variantPosition}
+        initialVariantAlt={variantAlt}
+      />
     </div>
   );
 }
