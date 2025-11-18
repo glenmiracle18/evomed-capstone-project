@@ -93,14 +93,14 @@ def test_gnomad_integration():
         print(f"   ⚠️  Variant not found in gnomAD (expected for rare pathogenic)")
 
     # Test common benign variant (should have higher frequency)
-    print("\n📍 Test 2: Common benign variant")
-    print("   chr17:43044295 G>A")
+    print("\n📍 Test 2: Common benign variant (APOE ε4)")
+    print("   chr19:44908684 T>C")
 
     af_afr_common = api.get_african_frequency(
-        chromosome="17",
-        position=43044295,
-        ref="G",
-        alt="A"
+        chromosome="19",
+        position=44908684,
+        ref="T",
+        alt="C"
     )
 
     if af_afr_common is not None:
@@ -116,10 +116,10 @@ def test_gnomad_integration():
         # Get full population summary
         print("\n   📊 Full population data:")
         summary = api.get_population_summary(
-            chromosome="17",
-            position=43044295,
-            ref="G",
-            alt="A"
+            chromosome="19",
+            position=44908684,
+            ref="T",
+            alt="C"
         )
 
         if summary["found"]:

@@ -49,6 +49,8 @@ class GnomADAPI:
             return self.cache[variant_id]
 
         # Updated GraphQL query for gnomAD v4
+        # Note: AF (allele frequency) must be calculated from AC/AN
+        # Population-level "af" field doesn't exist in gnomAD v4 schema
         query = """
         query VariantQuery($variantId: String!, $datasetId: DatasetId!) {
           variant(variantId: $variantId, dataset: $datasetId) {
@@ -60,18 +62,10 @@ class GnomADAPI:
             genome {
               ac
               an
-              af
-              ac_hom
-              faf95 {
-                popmax
-                popmax_population
-              }
               populations {
                 id
                 ac
                 an
-                af
-                ac_hom
               }
             }
           }
@@ -121,6 +115,11 @@ class GnomADAPI:
                 # Extract population frequencies
                 populations = genome_data.get("populations", [])
 
+                # Calculate global allele frequency from AC/AN
+                global_ac = genome_data.get("ac", 0)
+                global_an = genome_data.get("an", 0)
+                global_af = global_ac / global_an if global_an > 0 else None
+
                 # Build result dictionary
                 result = {
                     "variant_id": variant_id,
@@ -128,22 +127,24 @@ class GnomADAPI:
                     "position": variant_data.get("pos"),
                     "ref": variant_data.get("ref"),
                     "alt": variant_data.get("alt"),
-                    "global_af": genome_data.get("af"),
-                    "global_ac": genome_data.get("ac"),
-                    "global_an": genome_data.get("an"),
-                    "global_hom": genome_data.get("ac_hom"),
+                    "global_af": global_af,
+                    "global_ac": global_ac,
+                    "global_an": global_an,
                     "populations": {}
                 }
 
-                # Extract specific population frequencies
+                # Extract specific population frequencies and calculate AF
                 for pop in populations:
                     pop_id = pop.get("id")
                     if pop_id:
+                        pop_ac = pop.get("ac", 0)
+                        pop_an = pop.get("an", 0)
+                        pop_af = pop_ac / pop_an if pop_an > 0 else None
+
                         result["populations"][pop_id] = {
-                            "af": pop.get("af"),
-                            "ac": pop.get("ac"),
-                            "an": pop.get("an"),
-                            "hom": pop.get("ac_hom")
+                            "af": pop_af,
+                            "ac": pop_ac,
+                            "an": pop_an
                         }
 
                 # Cache the result
@@ -230,8 +231,7 @@ class GnomADAPI:
             "global": {
                 "af": variant_data.get("global_af"),
                 "ac": variant_data.get("global_ac"),
-                "an": variant_data.get("global_an"),
-                "hom": variant_data.get("global_hom")
+                "an": variant_data.get("global_an")
             },
             "african": populations.get("afr", {}).get("af") if "afr" in populations else None,
             "european": populations.get("nfe", {}).get("af") if "nfe" in populations else None,
@@ -250,13 +250,13 @@ if __name__ == "__main__":
     api = GnomADAPI()
 
     # Test with a more common variant that's likely in gnomAD
-    print("\n📍 Testing common BRCA1 variant: chr17:43094464 A>C")
-    print("   (This is a known benign variant)")
+    print("\n📍 Testing APOE ε4 variant: chr19:44908684 T>C")
+    print("   (This is a very common Alzheimer's risk variant)")
 
     af_afr = api.get_african_frequency(
-        chromosome="17",
-        position=43094464,
-        ref="A",
+        chromosome="19",
+        position=44908684,
+        ref="T",
         alt="C"
     )
 
@@ -275,9 +275,9 @@ if __name__ == "__main__":
     # Get full population summary
     print("\n📊 Full Population Summary:")
     summary = api.get_population_summary(
-        chromosome="17",
-        position=43094464,
-        ref="A",
+        chromosome="19",
+        position=44908684,
+        ref="T",
         alt="C"
     )
 
@@ -294,20 +294,22 @@ if __name__ == "__main__":
     else:
         print(f"   {summary['message']}")
 
-    # Test with another variant
-    print("\n\n📍 Testing rs80357906 (BRCA1): chr17:43057051 T>C")
+    # Test with a rare variant (should NOT be found)
+    print("\n\n📍 Testing rare BRCA1 pathogenic variant: chr17:43045677 G>A")
+    print("   (Expected to NOT be found - pathogenic variants are rare)")
 
     af_afr2 = api.get_african_frequency(
         chromosome="17",
-        position=43057051,
-        ref="T",
-        alt="C"
+        position=43045677,
+        ref="G",
+        alt="A"
     )
 
     if af_afr2 is not None:
-        print(f"✅ African Frequency: {af_afr2:.6f} ({af_afr2 * 100:.4f}%)")
+        print(f"⚠️  Found in gnomAD: {af_afr2:.6f} ({af_afr2 * 100:.4f}%)")
+        print("   (Higher frequency than expected for pathogenic variant)")
     else:
-        print("⚠️  Variant not found in gnomAD (may be rare pathogenic)")
+        print("✅ Variant not found in gnomAD (correct for rare pathogenic)")
 
     print("\n✅ gnomAD API test complete!")
     print("\nNOTE: If variants aren't found, this is normal for:")
