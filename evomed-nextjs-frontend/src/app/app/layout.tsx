@@ -6,10 +6,11 @@ import { Button } from "~/components/ui/button";
 import { CommandPalette } from "~/components/command-palette";
 import { ThemeProvider, useTheme } from "~/contexts/theme-context";
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, ChevronLeft, ChevronRight, Search, BookOpen } from "lucide-react";
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -26,38 +27,42 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-[#e9eeea] dark:bg-[#1a1f1a]">
-      {/* Sidebar Navigation */}
-      <aside className="flex w-16 flex-col items-center border-r border-[#3c4f3d]/10 bg-white py-6 dark:border-[#3c4f3d]/20 dark:bg-[#242924]">
-        <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-lg bg-[#3c4f3d] text-lg font-bold text-white">
-          E
+      {/* Sidebar Navigation - Fixed and Expandable */}
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-[#3c4f3d]/10 bg-white py-6 transition-all duration-300 dark:border-[#3c4f3d]/20 dark:bg-[#242924] ${
+          sidebarExpanded ? 'w-64' : 'w-16'
+        }`}
+      >
+        {/* Logo */}
+        <div className="mb-8 flex items-center gap-3 px-3">
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#3c4f3d] text-lg font-bold text-white">
+            E
+          </div>
+          {sidebarExpanded && (
+            <span className="text-lg font-semibold text-[#3c4f3d] dark:text-white whitespace-nowrap overflow-hidden">
+              EvoMed
+            </span>
+          )}
         </div>
 
-        <nav className="flex flex-1 flex-col gap-4">
+        {/* Navigation Links */}
+        <nav className="flex flex-1 flex-col gap-2 px-3">
           <Link href="/app">
-            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-[#de8246] text-white transition-colors hover:bg-[#de8246]/90">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
+            <div className="flex h-10 cursor-pointer items-center gap-3 rounded-lg bg-[#de8246] px-3 text-white transition-colors hover:bg-[#de8246]/90">
+              <Search className="h-5 w-5 flex-shrink-0" />
+              {sidebarExpanded && (
+                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  Variant Search
+                </span>
+              )}
             </div>
           </Link>
 
           <Link href="/app/pre-screening">
-            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[#3c4f3d]/60 transition-colors hover:bg-[#e9eeea] dark:text-white/60 dark:hover:bg-[#3c4f3d]/20">
+            <div className="flex h-10 cursor-pointer items-center gap-3 rounded-lg px-3 text-[#3c4f3d]/60 transition-colors hover:bg-[#e9eeea] dark:text-white/60 dark:hover:bg-[#3c4f3d]/20">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
+                className="h-5 w-5 flex-shrink-0"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -67,34 +72,45 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
               >
                 <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"></path>
               </svg>
+              {sidebarExpanded && (
+                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  Pre-Screening
+                </span>
+              )}
             </div>
           </Link>
 
           <Link href="/app/docs">
-            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[#3c4f3d]/60 transition-colors hover:bg-[#e9eeea] dark:text-white/60 dark:hover:bg-[#3c4f3d]/20">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
+            <div className="flex h-10 cursor-pointer items-center gap-3 rounded-lg px-3 text-[#3c4f3d]/60 transition-colors hover:bg-[#e9eeea] dark:text-white/60 dark:hover:bg-[#3c4f3d]/20">
+              <BookOpen className="h-5 w-5 flex-shrink-0" />
+              {sidebarExpanded && (
+                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  Documentation
+                </span>
+              )}
             </div>
           </Link>
         </nav>
 
-        <div className="mt-auto flex flex-col gap-4">
+        {/* Bottom Actions */}
+        <div className="mt-auto flex flex-col gap-3 px-3">
+          {/* Toggle Sidebar Button */}
+          <button
+            onClick={() => setSidebarExpanded(!sidebarExpanded)}
+            className="flex h-10 items-center justify-center rounded-lg border border-[#3c4f3d]/20 text-[#3c4f3d] transition-colors hover:border-[#de8246] hover:bg-[#de8246]/10 hover:text-[#de8246] dark:border-[#3c4f3d]/30 dark:text-white dark:hover:border-[#de8246] dark:hover:bg-[#de8246]/10"
+            aria-label="Toggle sidebar"
+          >
+            {sidebarExpanded ? (
+              <ChevronLeft className="h-5 w-5" />
+            ) : (
+              <ChevronRight className="h-5 w-5" />
+            )}
+          </button>
+
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#3c4f3d]/20 text-[#3c4f3d] transition-colors hover:border-[#de8246] hover:bg-[#de8246]/10 hover:text-[#de8246] dark:border-[#3c4f3d]/30 dark:text-white dark:hover:border-[#de8246] dark:hover:bg-[#de8246]/10"
+            className="flex h-10 items-center justify-center rounded-lg border border-[#3c4f3d]/20 text-[#3c4f3d] transition-colors hover:border-[#de8246] hover:bg-[#de8246]/10 hover:text-[#de8246] dark:border-[#3c4f3d]/30 dark:text-white dark:hover:border-[#de8246] dark:hover:bg-[#de8246]/10"
             aria-label="Toggle theme"
           >
             {theme === "light" ? (
@@ -104,12 +120,18 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
             )}
           </button>
 
-          <UserButton />
+          <div className="flex justify-center">
+            <UserButton />
+          </div>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1">{children}</main>
+      {/* Main Content - Add left margin to account for fixed sidebar */}
+      <main className={`flex-1 transition-all duration-300 ${
+        sidebarExpanded ? 'ml-64' : 'ml-16'
+      }`}>
+        {children}
+      </main>
 
       {/* Command Palette */}
       <CommandPalette
