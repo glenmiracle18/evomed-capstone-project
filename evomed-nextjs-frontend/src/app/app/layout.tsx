@@ -52,6 +52,24 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
           </Link>
 
+          <Link href="/app/pre-screening">
+            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[#3c4f3d]/60 transition-colors hover:bg-[#e9eeea] dark:text-white/60 dark:hover:bg-[#3c4f3d]/20">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"></path>
+              </svg>
+            </div>
+          </Link>
+
           <Link href="/app/docs">
             <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-[#3c4f3d]/60 transition-colors hover:bg-[#e9eeea] dark:text-white/60 dark:hover:bg-[#3c4f3d]/20">
               <svg
