@@ -14,7 +14,7 @@ interface DNAHelix3DProps {
   startPosition?: number;
 }
 
-// Enhanced base pair colors with more vibrant tones
+// Enhanced base pair colors with more vibrant tone
 const BASE_COLORS = {
   A: "#00ff88", // Adenine - Bright Green
   T: "#ff3366", // Thymine - Bright Red
@@ -61,20 +61,20 @@ function BasePair({
   const color2 = BASE_COLORS[base2 as keyof typeof BASE_COLORS] || "#888888";
 
   return (
-    <group ref={groupRef} position={[0, yPosition, 0]} rotation={[0, rotation, 0]}>
+    <group
+      ref={groupRef}
+      position={[0, yPosition, 0]}
+      rotation={[0, rotation, 0]}
+    >
       {/* Backbone spheres */}
       <mesh position={[2, 0, 0]}>
         <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial
-          color={isMutation ? "#ff3366" : "#3c4f3d"}
-        />
+        <meshStandardMaterial color={isMutation ? "#ff3366" : "#3c4f3d"} />
       </mesh>
 
       <mesh position={[-2, 0, 0]}>
         <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial
-          color={isMutation ? "#ff3366" : "#3c4f3d"}
-        />
+        <meshStandardMaterial color={isMutation ? "#ff3366" : "#3c4f3d"} />
       </mesh>
 
       {/* Base pairs */}
@@ -181,7 +181,8 @@ function Helix({
       const complement = COMPLEMENT[base] || "N";
       const rotation = (index * Math.PI) / 5; // Twist angle for double helix
       const yPosition = index * verticalSpacing + centerOffset; // Center around origin
-      const isMutation = mutationPosition !== null && position === mutationPosition;
+      const isMutation =
+        mutationPosition !== null && position === mutationPosition;
 
       return {
         base1: base,
