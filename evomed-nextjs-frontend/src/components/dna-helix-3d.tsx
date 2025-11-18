@@ -284,15 +284,19 @@ function Helix({
     }
   });
 
-  // Display first 80 bases for better performance with enhanced graphics
-  const displaySequence = sequence.slice(0, 80).toUpperCase();
+  // Display first 60 bases for better performance
+  const displaySequence = sequence.slice(0, 60).toUpperCase();
 
   const basePairs = useMemo(() => {
+    const verticalSpacing = 0.35;
+    const totalHeight = displaySequence.length * verticalSpacing;
+    const centerOffset = -totalHeight / 2; // Center the helix vertically
+
     return displaySequence.split("").map((base, index) => {
       const position = startPosition + index;
       const complement = COMPLEMENT[base] || "N";
       const rotation = (index * Math.PI) / 5; // Twist angle for double helix
-      const yPosition = index * 0.35; // Vertical spacing
+      const yPosition = index * verticalSpacing + centerOffset; // Center around origin
       const isMutation = mutationPosition !== null && position === mutationPosition;
 
       return {
@@ -364,40 +368,23 @@ export function DNAHelix3D({
       </div>
 
       {/* 3D Canvas */}
-      <div className="relative h-[500px] bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-[#242924]">
-        <Canvas shadows>
-          <PerspectiveCamera makeDefault position={[10, 14, 10]} fov={50} />
+      <div className="relative h-[500px] bg-white dark:bg-[#242924]">
+        <Canvas>
+          <PerspectiveCamera makeDefault position={[8, 12, 8]} fov={60} />
           <OrbitControls
             enableZoom={true}
             enablePan={true}
             enableRotate={true}
             autoRotate={true}
-            autoRotateSpeed={1.0}
+            autoRotateSpeed={0.8}
             minDistance={5}
-            maxDistance={25}
+            maxDistance={30}
           />
 
-          {/* Enhanced Lighting Setup */}
-          <ambientLight intensity={0.6} />
-          <directionalLight
-            position={[10, 15, 5]}
-            intensity={1.2}
-            castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-          />
-          <pointLight position={[-10, -10, -5]} intensity={0.8} color="#4488ff" />
-          <pointLight position={[10, 5, -10]} intensity={0.6} color="#ff8844" />
-          <spotLight
-            position={[0, 20, 0]}
-            angle={0.3}
-            penumbra={1}
-            intensity={0.5}
-            castShadow
-          />
-
-          {/* Fog for depth */}
-          <fog attach="fog" args={["#f8fafc", 15, 35]} />
+          {/* Lighting */}
+          <ambientLight intensity={0.8} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <pointLight position={[-10, -10, -5]} intensity={0.5} color="#4488ff" />
 
           {/* DNA Helix */}
           <Helix
@@ -406,17 +393,6 @@ export function DNAHelix3D({
             startPosition={startPosition}
             onBaseClick={handleBaseClick}
           />
-
-          {/* Ground plane for better depth perception */}
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
-            <planeGeometry args={[50, 50]} />
-            <meshStandardMaterial
-              color="#e2e8f0"
-              opacity={0.3}
-              transparent
-              roughness={0.8}
-            />
-          </mesh>
         </Canvas>
 
         {/* Info Panel - pointer-events-none to allow interaction with canvas */}
