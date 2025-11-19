@@ -1,6 +1,6 @@
 # Genetic Pre-Screening Tool for Rural Populations
 
-## 🎯 Project Overview
+## Project Overview
 
 This is a **groundbreaking feature** added to the EvoMed platform that solves a critical problem: **rural populations don't have access to expensive genetic testing** ($1000+), and even if they did, they don't know their genetic sequences beforehand.
 
@@ -14,7 +14,6 @@ Instead of requiring users to have their genetic test results first, this tool:
 
 ---
 
-## 🏗️ What We Built
 
 ### Backend API
 **File**: `src/app/api/recommend-variants/route.ts`
