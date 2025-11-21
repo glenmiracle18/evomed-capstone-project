@@ -63,7 +63,9 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
       geneBounds?.min?.toString() || "",
     );
     const [variantReference, setVariantReference] = useState("");
-    const [variantAlternative, setVariantAlternative] = useState(initialAlt || "");
+    const [variantAlternative, setVariantAlternative] = useState(
+      initialAlt || "",
+    );
     const [variantResult, setVariantResult] = useState<AnalysisResult | null>(
       null,
     );
@@ -140,45 +142,25 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
         </div>
 
         {/* African Population Adjustment Toggle */}
-        <div className="mb-5 rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/30 dark:bg-[#1a1f1a]/50 p-4">
+        <div className="mb-5 rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/30 p-4 dark:bg-[#1a1f1a]/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4 text-[#3c4f3d] dark:text-white" />
+              <Globe className="h-8 w-8 text-[#3c4f3d] dark:text-white" />
               <label className="text-sm font-medium text-[#3c4f3d] dark:text-white">
-                African Population Adjustment
+                Note: All variants are adjusted for African population
+                frequencies to reduce false positives for variants common in
+                African populations.
               </label>
               <Tooltip content="Uses gnomAD African population frequencies to reduce false positives for variants common in African populations" />
             </div>
-            <button
-              onClick={() =>
-                onUseAfricanAdjustmentChange(!useAfricanAdjustment)
-              }
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                useAfricanAdjustment ? "bg-[#de8246]" : "bg-[#3c4f3d]/20"
-              }`}
-              role="switch"
-              aria-checked={useAfricanAdjustment}
-            >
-              <span
-                aria-hidden="true"
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${
-                  useAfricanAdjustment ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </button>
           </div>
-          <p className="mt-2 text-xs text-[#3c4f3d]/60 dark:text-white/60">
-            {useAfricanAdjustment
-              ? "Enabled: Adjusts predictions based on African population frequencies to reduce health disparities"
-              : "Disabled: Uses standard Evo2 analysis without population-specific adjustments"}
-          </p>
         </div>
 
         {/* Input Fields */}
         <div className="mb-5">
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-medium tracking-wider text-[#3c4f3d]/70 dark:text-white/70 uppercase">
+              <label className="mb-1.5 block text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase dark:text-white/70">
                 Position
               </label>
               <Input
@@ -188,7 +170,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium tracking-wider text-[#3c4f3d]/70 dark:text-white/70 uppercase">
+              <label className="mb-1.5 block text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase dark:text-white/70">
                 Alternative (variant)
               </label>
               <Input
@@ -206,7 +188,9 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
 
           {variantReference && (
             <div className="mt-3 flex items-center gap-2 text-sm text-[#3c4f3d] dark:text-white">
-              <span className="text-xs text-[#3c4f3d]/60 dark:text-white/60">Substitution:</span>
+              <span className="text-xs text-[#3c4f3d]/60 dark:text-white/60">
+                Substitution:
+              </span>
               <span
                 className={`font-medium ${getNucleotideColorClass(variantReference)}`}
               >
@@ -267,7 +251,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
               return (
                 <div
                   key={matchedVariant.clinvar_id}
-                  className="border-priamry/10 mt-4 rounded-md border bg-[#e9eeea]/30 dark:bg-[#1a1f1a]/50 p-4"
+                  className="border-priamry/10 mt-4 rounded-md border bg-[#e9eeea]/30 p-4 dark:bg-[#1a1f1a]/50"
                 >
                   <div className="mb-3 flex items-center justify-between">
                     <h4 className="text-priamry text-sm font-medium">
@@ -350,7 +334,7 @@ const VariantAnalysis = forwardRef<VariantAnalysisHandle, VariantAnalysisProps>(
             </div>
 
             {/* Main Result Card */}
-            <div className="border-priamry/10 rounded-lg border bg-[#e9eeea]/30 dark:bg-[#1a1f1a]/50 p-4">
+            <div className="border-priamry/10 rounded-lg border bg-[#e9eeea]/30 p-4 dark:bg-[#1a1f1a]/50">
               <div className="mb-3 flex items-center justify-between">
                 <h4 className="text-priamry text-sm font-medium">
                   Analysis Result
