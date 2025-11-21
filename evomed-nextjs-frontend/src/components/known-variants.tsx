@@ -143,7 +143,7 @@ export default function KnownVariants({
           {clinvarVariants.map((variant) => (
             <div
               key={variant.clinvar_id}
-              className="rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/20 dark:bg-[#1a1f1a]/30 p-4 transition-colors hover:border-[#3c4f3d]/20"
+              className="rounded-lg border border-[#3c4f3d]/10 bg-[#e9eeea]/20 p-4 transition-colors hover:border-[#3c4f3d]/20 dark:bg-[#1a1f1a]/30"
             >
               <div className="mb-3 flex items-start justify-between">
                 <div className="flex-1">
@@ -171,7 +171,7 @@ export default function KnownVariants({
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
-                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 dark:text-white/70 uppercase">
+                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase dark:text-white/70">
                     Type
                   </div>
                   <div className="text-sm text-[#3c4f3d] dark:text-white">
@@ -180,7 +180,7 @@ export default function KnownVariants({
                 </div>
 
                 <div>
-                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 dark:text-white/70 uppercase">
+                  <div className="mb-1 text-xs font-medium tracking-wider text-[#3c4f3d]/70 uppercase dark:text-white/70">
                     Clinical Significance
                   </div>
                   <div
@@ -194,7 +194,7 @@ export default function KnownVariants({
                         className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium ${getClassificationColorClasses(variant.evo2Result.prediction)}`}
                       >
                         <Shield className="h-3 w-3" />
-                        Evo2: {variant.evo2Result.prediction}
+                        Evomed: {variant.evo2Result.prediction}
                       </div>
                     </div>
                   )}

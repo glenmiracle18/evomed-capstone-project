@@ -16,20 +16,27 @@ export function PathogenicityChart({ result }: PathogenicityChartProps) {
     return () => clearTimeout(timer);
   }, [result]);
 
-  const score = result.population_adjusted_score ?? result.evo2_delta_score ?? result.delta_score ?? 0;
-  const confidence = (result.confidence ?? result.classification_confidence ?? 0) * 100;
+  const score =
+    result.population_adjusted_score ??
+    result.evo2_delta_score ??
+    result.delta_score ??
+    0;
+  const confidence =
+    (result.confidence ?? result.classification_confidence ?? 0) * 100;
 
   // Normalize score to 0-100 scale (scores typically range from -10 to +10)
   const normalizedScore = ((score + 10) / 20) * 100;
   const clampedScore = Math.max(0, Math.min(100, normalizedScore));
 
   // Determine color based on prediction
-  const isPathogenic = result.prediction?.toLowerCase().includes("pathogenic") &&
-                       !result.prediction?.toLowerCase().includes("benign");
+  const isPathogenic =
+    result.prediction?.toLowerCase().includes("pathogenic") &&
+    !result.prediction?.toLowerCase().includes("benign");
 
   const getScoreColor = () => {
     if (isPathogenic) return "#ef4444"; // red
-    if (result.prediction?.toLowerCase().includes("uncertain")) return "#f59e0b"; // amber
+    if (result.prediction?.toLowerCase().includes("uncertain"))
+      return "#f59e0b"; // amber
     return "#10b981"; // green
   };
 
@@ -74,10 +81,15 @@ export function PathogenicityChart({ result }: PathogenicityChartProps) {
 
           {/* Center Content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className={`text-4xl font-bold transition-all duration-700 ${animated ? "scale-100 opacity-100" : "scale-0 opacity-0"}`} style={{ color: getScoreColor() }}>
+            <div
+              className={`text-4xl font-bold transition-all duration-700 ${animated ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
+              style={{ color: getScoreColor() }}
+            >
               {Math.round(confidence)}%
             </div>
-            <div className="text-sm text-[#3c4f3d]/70 dark:text-white/70">Confidence</div>
+            <div className="text-sm text-[#3c4f3d]/70 dark:text-white/70">
+              Confidence
+            </div>
           </div>
         </div>
       </div>
@@ -85,8 +97,12 @@ export function PathogenicityChart({ result }: PathogenicityChartProps) {
       {/* Score Bar */}
       <div>
         <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="text-[#3c4f3d]/70 dark:text-white/70">Delta Score</span>
-          <span className="font-medium text-[#3c4f3d] dark:text-white">{score.toFixed(4)}</span>
+          <span className="text-[#3c4f3d]/70 dark:text-white/70">
+            Delta Score
+          </span>
+          <span className="font-medium text-[#3c4f3d] dark:text-white">
+            {score.toFixed(4)}
+          </span>
         </div>
 
         {/* Score Scale */}
@@ -95,7 +111,7 @@ export function PathogenicityChart({ result }: PathogenicityChartProps) {
           <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-amber-500 to-green-500 opacity-20" />
 
           {/* Midpoint marker */}
-          <div className="absolute left-1/2 top-0 h-full w-0.5 bg-[#3c4f3d]/30" />
+          <div className="absolute top-0 left-1/2 h-full w-0.5 bg-[#3c4f3d]/30" />
 
           {/* Score indicator */}
           <div
@@ -106,11 +122,14 @@ export function PathogenicityChart({ result }: PathogenicityChartProps) {
             }}
           >
             {/* Pointer */}
-            <div className="absolute -top-1 left-1/2 h-5 w-5 -translate-x-1/2 rotate-45 bg-gradient-to-br" style={{ background: getScoreColor() }} />
+            <div
+              className="absolute -top-1 left-1/2 h-5 w-5 -translate-x-1/2 rotate-45 bg-gradient-to-br"
+              style={{ background: getScoreColor() }}
+            />
           </div>
         </div>
 
-        <div className="mt-1 flex justify-between text-xs text-[#3c4f3d]/50">
+        <div className="mt-1 flex justify-between text-xs text-[#3c4f3d]/50 dark:text-white">
           <span>Pathogenic</span>
           <span>Neutral</span>
           <span>Benign</span>
@@ -119,7 +138,9 @@ export function PathogenicityChart({ result }: PathogenicityChartProps) {
 
       {/* Prediction Badge */}
       <div className="flex justify-center">
-        <div className={`transform rounded-lg px-6 py-3 text-center font-medium text-white transition-all duration-700 ${animated ? "scale-100 opacity-100" : "scale-90 opacity-0"} bg-gradient-to-r ${getGradientStops()}`}>
+        <div
+          className={`transform rounded-lg px-6 py-3 text-center font-medium text-white transition-all duration-700 ${animated ? "scale-100 opacity-100" : "scale-90 opacity-0"} bg-gradient-to-r ${getGradientStops()}`}
+        >
           {result.prediction}
         </div>
       </div>
@@ -128,32 +149,47 @@ export function PathogenicityChart({ result }: PathogenicityChartProps) {
       {result.use_african_adjustment && (
         <div className="rounded-lg border border-[#de8246]/20 bg-[#de8246]/5 p-4">
           <div className="mb-2 flex items-center gap-2">
-            <svg className="h-4 w-4 text-[#de8246]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="h-4 w-4 text-[#de8246]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <h5 className="text-sm font-medium text-[#3c4f3d] dark:text-white">
               Population-Adjusted Analysis
             </h5>
           </div>
 
-          {result.african_frequency !== null && result.african_frequency !== undefined && (
-            <div className="mt-2">
-              <div className="text-xs text-[#3c4f3d]/70 dark:text-white/70">African Population Frequency</div>
-              <div className="mt-1 flex items-center gap-2">
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-white">
-                  <div
-                    className="h-full bg-gradient-to-r from-[#de8246] to-[#de8246]/60 transition-all duration-1000"
-                    style={{
-                      width: animated ? `${Math.min(result.african_frequency * 100, 100)}%` : "0%",
-                    }}
-                  />
+          {result.african_frequency !== null &&
+            result.african_frequency !== undefined && (
+              <div className="mt-2">
+                <div className="text-xs text-[#3c4f3d]/70 dark:text-white/70">
+                  African Population Frequency
                 </div>
-                <span className="text-sm font-medium text-[#3c4f3d] dark:text-white">
-                  {(result.african_frequency * 100).toFixed(2)}%
-                </span>
+                <div className="mt-1 flex items-center gap-2">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-white">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#de8246] to-[#de8246]/60 transition-all duration-1000"
+                      style={{
+                        width: animated
+                          ? `${Math.min(result.african_frequency * 100, 100)}%`
+                          : "0%",
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm font-medium text-[#3c4f3d] dark:text-white">
+                    {(result.african_frequency * 100).toFixed(2)}%
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       )}
     </div>

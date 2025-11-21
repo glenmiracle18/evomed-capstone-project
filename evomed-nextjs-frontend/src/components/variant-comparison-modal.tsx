@@ -148,7 +148,7 @@ export function VariantComparisonModal({
                         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#3c4f3d]/10">
                           <span className="h-3 w-3 rounded-full bg-[#de8246]"></span>
                         </span>
-                        Evo2 Prediction
+                        Evomed Prediction
                       </h5>
                       <div className="mt-2">
                         <div
@@ -156,28 +156,6 @@ export function VariantComparisonModal({
                         >
                           <Shield className="h-3 w-3" />
                           {comparisonVariant.evo2Result.prediction}
-                        </div>
-                      </div>
-                      {/* Delta score */}
-                      <div className="mt-3">
-                        <div className="mb-1 text-xs text-[#3c4f3d]/70">
-                          Delta Likelihood Score:
-                        </div>
-                        <div className="text-sm font-medium">
-                          {comparisonVariant.evo2Result.delta_score != null &&
-                          !isNaN(comparisonVariant.evo2Result.delta_score)
-                            ? comparisonVariant.evo2Result.delta_score.toFixed(
-                                6,
-                              )
-                            : "N/A"}
-                        </div>
-                        <div className="text-xs text-[#3c4f3d]/60">
-                          {comparisonVariant.evo2Result.delta_score != null &&
-                          !isNaN(comparisonVariant.evo2Result.delta_score)
-                            ? comparisonVariant.evo2Result.delta_score < 0
-                              ? "Negative score indicates loss of function"
-                              : "Positive score indicates gain/neutral function"
-                            : "Delta score not available"}
                         </div>
                       </div>
                       {/* Confidence bar */}
@@ -317,17 +295,6 @@ export function VariantComparisonModal({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Modal footer */}
-        <div className="flex justify-end border-t border-[#3c4f3d]/10 bg-[#e9eeea]/30 p-4">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="cursor-pointer border-[#3c4f3d]/10 bg-white text-[#3c4f3d] hover:bg-[#e9eeea]/70"
-          >
-            Close
-          </Button>
         </div>
       </div>
     </div>
