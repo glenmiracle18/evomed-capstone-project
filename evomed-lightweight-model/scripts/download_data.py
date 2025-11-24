@@ -37,7 +37,7 @@ def download_file(url: str, output_path: Path, desc: str = "Downloading"):
                 size = f.write(chunk)
                 pbar.update(size)
 
-        print(f"✅ Downloaded: {output_path}")
+        print(f" Downloaded: {output_path}")
         return True
     except Exception as e:
         print(f"❌ Error downloading {url}: {e}")
@@ -54,17 +54,16 @@ def download_brca_exchange():
     - include[]=all to include all data sources (ClinVar, ENIGMA, gnomAD, etc.)
     - page_size=0 to disable pagination and get all results
     """
-    print("\n📥 Downloading BRCA Exchange dataset via API...")
+    print("\n Downloading BRCA Exchange dataset via API...")
     filtered_path = DATA_DIR / "brca_exchange_brca1.tsv"
 
     if filtered_path.exists():
-        print(f"⚠️  File already exists: {filtered_path}")
+        print(f"⚠️ File already exists: {filtered_path}")
         user_input = input("Re-download? (y/n): ")
         if user_input.lower() != "y":
             return True
 
     try:
-        # Build API URL with correct parameters according to documentation
         # Format: /backend/data/?format=tsv&filter[]=Gene_Symbol&filterValue[]=BRCA1&include[]=all&page_size=0
         params = {
             "format": "tsv",

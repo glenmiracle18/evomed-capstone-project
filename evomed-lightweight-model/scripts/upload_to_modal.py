@@ -1,9 +1,11 @@
 """
 Upload processed training data to Modal volume
 """
-import modal
-from pathlib import Path
+
 import sys
+from pathlib import Path
+
+import modal
 
 sys.path.append(str(Path(__file__).parent.parent))
 from configs.config import DATA_DIR
@@ -12,6 +14,7 @@ app = modal.App("evomed-data-upload")
 
 # Reference the same volume used in training
 data_volume = modal.Volume.from_name("evomed-training-data", create_if_missing=True)
+
 
 @app.function(volumes={"/data": data_volume}, timeout=600)
 def upload_data():
@@ -40,17 +43,18 @@ def upload_data():
             dest_path = remote_data_dir / file_path.name
             shutil.copy(file_path, dest_path)
             files_uploaded.append(file_path.name)
-            print(f"   ✅ Uploaded: {file_path.name}")
+            print(f"    Uploaded: {file_path.name}")
 
     # Commit the volume
     data_volume.commit()
 
-    print(f"\n✅ Uploaded {len(files_uploaded)} files to Modal volume")
+    print(f"\n Uploaded {len(files_uploaded)} files to Modal volume")
 
     return {
         "files_uploaded": files_uploaded,
         "count": len(files_uploaded),
     }
+
 
 @app.local_entrypoint()
 def main():
@@ -77,7 +81,7 @@ def main():
     for file_path in local_processed.glob("*"):
         if file_path.is_file():
             shutil.copy(file_path, temp_dir / file_path.name)
-            print(f"   ✅ Copied: {file_path.name}")
+            print(f"   Copied: {file_path.name}")
 
     # Upload to Modal
     print(f"\n🚀 Uploading to Modal volume...")
@@ -87,11 +91,12 @@ def main():
         print(f"\n❌ Upload failed: {result['error']}")
         return 1
 
-    print(f"\n✅ Upload complete! {result['count']} files uploaded.")
-    print("\n📋 Next step:")
+    print(f"\n Upload complete! {result['count']} files uploaded.")
+    print("\n Next step:")
     print("   modal run training/train_modal.py")
 
     return 0
+
 
 if __name__ == "__main__":
     exit(main())

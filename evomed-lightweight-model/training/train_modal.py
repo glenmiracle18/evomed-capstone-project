@@ -67,7 +67,7 @@ def train_dnabert2():
     )
 
     print("=" * 70)
-    print("🧬 EvoMed Lightweight Model - DNABERT-2 Training")
+    print("EvoMed Lightweight Model - DNABERT-2 Training")
     print("=" * 70)
 
     # Configuration
@@ -75,7 +75,7 @@ def train_dnabert2():
     MAX_LENGTH = 512
     BATCH_SIZE = 16
     LEARNING_RATE = 2e-5
-    NUM_EPOCHS = 3
+    NUM_EPOCHS = 5
     WARMUP_STEPS = 100
 
     # LoRA config
@@ -83,7 +83,6 @@ def train_dnabert2():
     LORA_ALPHA = 16
     LORA_DROPOUT = 0.1
 
-    # Set random seed
     SEED = 42
     np.random.seed(SEED)
     torch.manual_seed(SEED)
@@ -98,7 +97,7 @@ def train_dnabert2():
         )
 
     # Load datasets
-    print("\n📂 Loading datasets...")
+    print("\n Loading datasets...")
     try:
         train_df = pd.read_csv("/data/processed/train.csv")
         val_df = pd.read_csv("/data/processed/val.csv")
@@ -116,8 +115,6 @@ def train_dnabert2():
     print(f"\n🤖 Loading DNABERT-2 model: {MODEL_NAME}")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
 
-    # For now, we'll use a simple approach with sequence representation
-    # In production, you'd fetch actual genomic sequences
     def prepare_sequence(row):
         """
         Prepare DNA sequence for the model
@@ -125,7 +122,6 @@ def train_dnabert2():
         ref = str(row["ref"])[: MAX_LENGTH // 2]
         alt = str(row["alt"])[: MAX_LENGTH // 2]
 
-        # Pad with N's to create context
         context_size = MAX_LENGTH // 4
         padding = "N" * context_size
 
@@ -135,7 +131,7 @@ def train_dnabert2():
         return sequence
 
     # Prepare datasets
-    print("\n🔄 Preparing sequences...")
+    print("\n Preparing sequences...")
 
     def df_to_dataset(df):
         """Convert DataFrame to HuggingFace Dataset"""
@@ -167,7 +163,7 @@ def train_dnabert2():
     print(f"   ✅ Test dataset: {len(test_dataset)} samples")
 
     # Tokenize datasets
-    print("\n🔤 Tokenizing sequences...")
+    print("\n Tokenizing sequences...")
 
     def tokenize_function(examples):
         return tokenizer(
@@ -182,7 +178,7 @@ def train_dnabert2():
     test_dataset = test_dataset.map(tokenize_function, batched=True)
 
     # Load model
-    print(f"\n🚀 Loading model for sequence classification...")
+    print(f"\n Loading model for sequence classification...")
     model = AutoModelForSequenceClassification.from_pretrained(
         MODEL_NAME,
         num_labels=2,
@@ -246,7 +242,7 @@ def train_dnabert2():
         }
 
     # Trainer
-    print("\n🏋️  Initializing Trainer...")
+    print("\n  Initializing Trainer...")
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -258,18 +254,18 @@ def train_dnabert2():
 
     # Train!
     print("\n" + "=" * 70)
-    print("🚀 Starting Training...")
+    print(" Starting Training...")
     print("=" * 70)
     train_result = trainer.train()
 
     # Save final model
-    print("\n💾 Saving final model...")
+    print("\n Saving final model...")
     final_model_path = "/models/dnabert2-brca1-final"
     trainer.save_model(final_model_path)
     tokenizer.save_pretrained(final_model_path)
 
     # Evaluate on test set
-    print("\n📊 Evaluating on test set...")
+    print("\n Evaluating on test set...")
     test_results = trainer.evaluate(test_dataset)
 
     # Get predictions for more detailed metrics
@@ -317,9 +313,9 @@ def train_dnabert2():
 
     # Print summary
     print("\n" + "=" * 70)
-    print("✅ Training Complete!")
+    print(" Training Complete!")
     print("=" * 70)
-    print(f"\n📊 Test Results:")
+    print(f"\n Test Results:")
     print(f"   Accuracy: {test_results.get('eval_accuracy', 0):.4f}")
     print(f"   Precision: {test_results.get('eval_precision', 0):.4f}")
     print(f"   Recall: {test_results.get('eval_recall', 0):.4f}")
@@ -329,8 +325,8 @@ def train_dnabert2():
     print(f"\n   Pathogenic Accuracy: {pathogenic_acc:.4f}")
     print(f"   Benign Accuracy: {benign_acc:.4f}")
 
-    print(f"\n💾 Model saved to: {final_model_path}")
-    print(f"📊 Results saved to: {results_path}")
+    print(f"\n Model saved to: {final_model_path}")
+    print(f" Results saved to: {results_path}")
 
     return results
 
@@ -338,15 +334,15 @@ def train_dnabert2():
 @app.local_entrypoint()
 def main():
     """Local entrypoint to trigger training"""
-    print("🚀 Launching DNABERT-2 training on Modal...")
+    print(" Launching DNABERT-2 training on Modal...")
     result = train_dnabert2.remote()
 
     print("\n" + "=" * 70)
     if "error" in result:
         print(f"❌ Training failed: {result['error']}")
     else:
-        print("✅ Training completed successfully!")
-        print("\n📊 Results:")
+        print(" Training completed successfully!")
+        print("\n Results:")
         import json
 
         print(json.dumps(result, indent=2))
