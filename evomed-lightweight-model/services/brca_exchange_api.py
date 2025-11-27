@@ -201,6 +201,43 @@ class BRCAExchangeAPI:
 
         return None
 
+    def fetch_all_variants(self, gene_symbol: str = "BRCA1") -> 'pd.DataFrame':
+        """
+        Fetch all variants for a gene from BRCA Exchange
+        
+        Args:
+            gene_symbol: Gene symbol (e.g., "BRCA1", "BRCA2")
+            
+        Returns:
+            pandas DataFrame with variant data
+        """
+        import pandas as pd
+        
+        print(f"Fetching all variants for {gene_symbol}...")
+        
+        all_variants = []
+        page_size = 1000  # Large page size to get more data
+        
+        # Search for all variants for the gene
+        result = self.search_variants(
+            gene_symbol=gene_symbol,
+            page_size=page_size
+        )
+        
+        if result.get("count", 0) == 0:
+            print(f"No variants found for {gene_symbol}")
+            return pd.DataFrame()
+        
+        variants = result.get("data", [])
+        all_variants.extend(variants)
+        
+        print(f"Found {len(all_variants):,} variants for {gene_symbol}")
+        
+        # Convert to DataFrame
+        df = pd.DataFrame(all_variants)
+        
+        return df
+
     def get_african_frequency(
         self,
         chromosome: str,

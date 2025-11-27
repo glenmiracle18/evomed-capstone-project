@@ -4,6 +4,7 @@ Includes African population frequency integration
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -31,17 +32,24 @@ np.random.seed(RANDOM_SEED)
 
 
 def load_datasets():
-    """Load all variants from BRCA Exchange API"""
-    print("\n📂 Loading variants from BRCA Exchange API...")
-    api = BRCAExchangeAPI()
-    variants_df = api.fetch_all_variants(gene_symbol=TARGET_GENE)
-
-    if variants_df.empty:
-        print(f"   ❌ No variants found for {TARGET_GENE}")
+    """Load all variants from downloaded data files"""
+    print("\n📂 Loading variants from downloaded data...")
+    
+    # Load from TSV file instead of API
+    brca_file = "data/brca_exchange_brca1.tsv"
+    
+    if not os.path.exists(brca_file):
+        print(f"   ❌ File not found: {brca_file}")
+        print("   Please run: python scripts/download_data.py")
         return {}
-
-    print(f"   ✅ Loaded {len(variants_df):,} variants from BRCA Exchange")
-    return {"brca_exchange": variants_df}
+    
+    try:
+        variants_df = pd.read_csv(brca_file, sep='\t', low_memory=False)
+        print(f"   ✅ Loaded {len(variants_df):,} variants from BRCA Exchange")
+        return {"brca_exchange": variants_df}
+    except Exception as e:
+        print(f"   ❌ Error loading {brca_file}: {e}")
+        return {}
 
 
 def parse_clinical_significance(sig_str: str) -> int:

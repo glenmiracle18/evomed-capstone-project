@@ -18,47 +18,38 @@ data_volume = modal.Volume.from_name("evomed-training-data", create_if_missing=T
 
 @app.function(volumes={"/data": data_volume}, timeout=600)
 def upload_data():
-    """Upload processed data to Modal volume"""
+    """Upload variants dataset to Modal volume"""
     import shutil
     from pathlib import Path
 
-    print("📤 Uploading data to Modal volume...")
+    print("Uploading data to Modal volume...")
 
-    # Local data directory
-    local_data_dir = Path("/tmp/evomed-data/processed")
-
-    if not local_data_dir.exists():
-        print(f"❌ Data directory not found: {local_data_dir}")
-        print("   Make sure to run prepare_training_data.py first!")
+    # Upload the variants dataset directly
+    local_variants_file = Path("/tmp/evomed-data/variants(1).tsv")
+    
+    if not local_variants_file.exists():
+        print(f"Data file not found: {local_variants_file}")
+        print("   Make sure variants(1).tsv is available!")
         return {"error": "Data not found"}
 
-    # Upload to Modal volume
-    remote_data_dir = Path("/data/processed")
-    remote_data_dir.mkdir(parents=True, exist_ok=True)
-
-    files_uploaded = []
-
-    for file_path in local_data_dir.glob("*"):
-        if file_path.is_file():
-            dest_path = remote_data_dir / file_path.name
-            shutil.copy(file_path, dest_path)
-            files_uploaded.append(file_path.name)
-            print(f"    Uploaded: {file_path.name}")
+    # Copy variants file to Modal volume
+    remote_variants_file = Path("/data/variants(1).tsv")
+    shutil.copy(local_variants_file, remote_variants_file)
+    print(f"   Uploaded: variants(1).tsv")
 
     # Commit the volume
     data_volume.commit()
 
-    print(f"\n Uploaded {len(files_uploaded)} files to Modal volume")
+    print(f" Data uploaded successfully to Modal volume")
 
     return {
-        "files_uploaded": files_uploaded,
-        "count": len(files_uploaded),
+        "files_uploaded": ["variants(1).tsv"],
+        "count": 1,
     }
 
 
-@app.local_entrypoint()
 def main():
-    """Local entrypoint to upload data"""
+    """Local function to upload data"""
     import shutil
     from pathlib import Path
 
@@ -66,34 +57,25 @@ def main():
     print("Uploading Training Data to Modal")
     print("=" * 60)
 
-    # Copy local data to /tmp for Modal access
-    local_processed = DATA_DIR / "processed"
-    temp_dir = Path("/tmp/evomed-data/processed")
+    # Copy variants dataset to /tmp for Modal access
+    local_variants = DATA_DIR / "variants(1).tsv"
+    temp_dir = Path("/tmp/evomed-data")
 
-    if not local_processed.exists():
-        print(f"\n❌ Processed data not found: {local_processed}")
-        print("   Please run: python scripts/prepare_training_data.py")
+    if not local_variants.exists():
+        print(f"\nVariants file not found: {local_variants}")
+        print("   Please ensure variants(1).tsv is in the data directory")
         return 1
 
-    print(f"\n📁 Copying data to temp directory...")
+    print(f"\nCopying data to temp directory...")
     temp_dir.mkdir(parents=True, exist_ok=True)
+    
+    temp_variants = temp_dir / "variants(1).tsv"
+    shutil.copy(local_variants, temp_variants)
+    print(f"   Copied: variants(1).tsv")
 
-    for file_path in local_processed.glob("*"):
-        if file_path.is_file():
-            shutil.copy(file_path, temp_dir / file_path.name)
-            print(f"   Copied: {file_path.name}")
-
-    # Upload to Modal
-    print(f"\n🚀 Uploading to Modal volume...")
-    result = upload_data.remote()
-
-    if "error" in result:
-        print(f"\n❌ Upload failed: {result['error']}")
-        return 1
-
-    print(f"\n Upload complete! {result['count']} files uploaded.")
-    print("\n Next step:")
-    print("   modal run training/train_modal.py")
+    print(f"\nNext step:")
+    print("   Run: modal run scripts/upload_to_modal.py::upload_data")
+    print("   Then: modal run training/train_modal.py")
 
     return 0
 

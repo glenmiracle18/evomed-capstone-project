@@ -3,10 +3,12 @@ Download BRCA1 variant datasets from BRCA Exchange and ClinVar
 """
 
 import gzip
+import io
 import shutil
 import sys
 from pathlib import Path
 
+import pandas as pd
 import requests
 from tqdm import tqdm
 
@@ -64,14 +66,34 @@ def download_brca_exchange():
             return True
 
     try:
-        # Format: /backend/data/?format=tsv&filter[]=Gene_Symbol&filterValue[]=BRCA1&include[]=all&page_size=0
-        params = {
-            "format": "tsv",
-            "filter[]": "Gene_Symbol",
-            "filterValue[]": TARGET_GENE,
-            "include[]": "all",  # Include all data sources
-            "page_size": "0",  # Disable pagination to get all results
-        }
+        # Try multiple approaches - the API might have changed
+        
+        # First try: Include specific sources instead of "all"
+        params = [
+            ("format", "tsv"),
+            ("include[]", "Variant_in_ClinVar"),
+            ("include[]", "Variant_in_ENIGMA"),
+            ("include[]", "Variant_in_GnomAD"),
+            ("filter[]", "Gene_Symbol"),
+            ("filterValue[]", TARGET_GENE),
+            ("page_size", "0"),
+        ]
+        
+        print(f"   Trying with specific sources first...")
+        response = requests.get(BRCA_EXCHANGE_API_BASE, params=params, timeout=300)
+        
+        if response.status_code == 200:
+            df_test = pd.read_csv(io.StringIO(response.text), sep='\t', low_memory=False)
+            if len(df_test) == 0:
+                print(f"   No results with specific sources, trying without filters...")
+                # Second try: No filtering, just get everything
+                params = [
+                    ("format", "tsv"),
+                    ("page_size", "1000"),  # Limit to first 1000 variants
+                ]
+                response = requests.get(BRCA_EXCHANGE_API_BASE, params=params, timeout=300)
+        
+        response.raise_for_status()
 
         print(f"   API endpoint: {BRCA_EXCHANGE_API_BASE}")
         print(f"   Filtering for gene: {TARGET_GENE}")

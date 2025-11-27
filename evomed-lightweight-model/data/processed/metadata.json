@@ -1,10 +1,9 @@
 {
-  "total_variants": 3893,
-  "train_size": 3114,
-  "val_size": 389,
-  "test_size": 390,
-  "pathogenic_count": 823,
-  "benign_count": 3070,
-  "random_seed": 42,
-  "dataset": "Findlay et al. 2018 BRCA1 saturation mutagenesis"
+  "total_variants": 0,
+  "train_size": 0,
+  "val_size": 0,
+  "test_size": 0,
+  "pathogenic_count": 0,
+  "benign_count": 0,
+  "random_seed": 42
 }
