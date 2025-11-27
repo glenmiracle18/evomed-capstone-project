@@ -19,6 +19,7 @@ lerna-debug.log*
 *~
 /evomed-lightweight-model/venv
 /evomed-lightweight-model/data/variants(1).tsv
+/evomed-lightweight-model/data/variants(1).tsv
 # Editor directories and files
 .vscode/*
 !.vscode/settings.json
