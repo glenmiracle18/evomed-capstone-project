@@ -1,0 +1,166 @@
+{
+  "timestamp": "2025-12-01T11:49:24.678653",
+  "model_type": "RandomForestClassifier",
+  "configuration": {
+    "n_estimators": 200,
+    "max_depth": 10,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "dataset": {
+    "train_samples": 8205,
+    "val_samples": 1026,
+    "test_samples": 1026,
+    "features": [
+      "position",
+      "position_normalized",
+      "ref_length",
+      "alt_length",
+      "length_diff",
+      "is_snv",
+      "is_insertion",
+      "is_deletion",
+      "af_afr",
+      "has_afr_data",
+      "log_af_afr",
+      "afr_rare",
+      "afr_uncommon",
+      "afr_common",
+      "ref_gc_content",
+      "alt_gc_content"
+    ],
+    "n_features": 16
+  },
+  "metrics": {
+    "train": {
+      "accuracy": 0.8977452772699573,
+      "balanced_accuracy": 0.8811723469002601,
+      "f1_macro": 0.8900092733242624,
+      "mcc": 0.7857252528688253,
+      "auc_roc": 0.9557087756986282,
+      "auc_pr": 0.9485427244822179,
+      "precision_benign": 0.8823746994636582,
+      "recall_benign": 0.9591877764374749,
+      "f1_benign": 0.9191792698198632,
+      "precision_pathogenic": 0.9274481772694781,
+      "recall_pathogenic": 0.8031569173630455,
+      "f1_pathogenic": 0.8608392768286613,
+      "sensitivity": 0.8031569173630455,
+      "specificity": 0.9591877764374749,
+      "fpr": 0.04081222356252513,
+      "fnr": 0.1968430826369545
+    },
+    "validation": {
+      "accuracy": 0.8771929824561403,
+      "balanced_accuracy": 0.8531684760115883,
+      "f1_macro": 0.8655436663782201,
+      "mcc": 0.7449385721557303,
+      "auc_roc": 0.9315208048136003,
+      "auc_pr": 0.9200780544052768,
+      "precision_benign": 0.8512747875354107,
+      "recall_benign": 0.9662379421221865,
+      "f1_benign": 0.9051204819277108,
+      "precision_pathogenic": 0.934375,
+      "recall_pathogenic": 0.7400990099009901,
+      "f1_pathogenic": 0.8259668508287292,
+      "sensitivity": 0.7400990099009901,
+      "specificity": 0.9662379421221865,
+      "fpr": 0.03376205787781351,
+      "fnr": 0.2599009900990099
+    },
+    "test": {
+      "accuracy": 0.8840155945419104,
+      "balanced_accuracy": 0.861831842348222,
+      "f1_macro": 0.8735630160378853,
+      "mcc": 0.7587700669053973,
+      "auc_roc": 0.9320122727706854,
+      "auc_pr": 0.9163017014214732,
+      "precision_benign": 0.8597997138769671,
+      "recall_benign": 0.9662379421221865,
+      "f1_benign": 0.9099167297501892,
+      "precision_pathogenic": 0.9357798165137615,
+      "recall_pathogenic": 0.7574257425742574,
+      "f1_pathogenic": 0.8372093023255814,
+      "sensitivity": 0.7574257425742574,
+      "specificity": 0.9662379421221865,
+      "fpr": 0.03376205787781351,
+      "fnr": 0.24257425742574257
+    }
+  },
+  "feature_importance": [
+    {
+      "feature": "is_snv",
+      "importance": 0.2627935085147986
+    },
+    {
+      "feature": "length_diff",
+      "importance": 0.13921320701427617
+    },
+    {
+      "feature": "ref_length",
+      "importance": 0.10652601955307757
+    },
+    {
+      "feature": "is_deletion",
+      "importance": 0.08754973108309047
+    },
+    {
+      "feature": "is_insertion",
+      "importance": 0.0755814913800794
+    },
+    {
+      "feature": "position_normalized",
+      "importance": 0.06720398770092176
+    },
+    {
+      "feature": "alt_length",
+      "importance": 0.06708438533492228
+    },
+    {
+      "feature": "position",
+      "importance": 0.06343801685381278
+    },
+    {
+      "feature": "alt_gc_content",
+      "importance": 0.0346258707859273
+    },
+    {
+      "feature": "af_afr",
+      "importance": 0.02683464749706482
+    },
+    {
+      "feature": "log_af_afr",
+      "importance": 0.024625081320047922
+    },
+    {
+      "feature": "has_afr_data",
+      "importance": 0.017949773167883584
+    },
+    {
+      "feature": "ref_gc_content",
+      "importance": 0.01454648571615242
+    },
+    {
+      "feature": "afr_rare",
+      "importance": 0.007917268714358008
+    },
+    {
+      "feature": "afr_common",
+      "importance": 0.0032256280691170137
+    },
+    {
+      "feature": "afr_uncommon",
+      "importance": 0.0008848972944699747
+    }
+  ],
+  "confusion_matrix": [
+    [
+      601,
+      21
+    ],
+    [
+      98,
+      306
+    ]
+  ]
+}

@@ -1,9 +1,17 @@
 {
-  "total_variants": 0,
-  "train_size": 0,
-  "val_size": 0,
-  "test_size": 0,
-  "pathogenic_count": 0,
-  "benign_count": 0,
-  "random_seed": 42
+  "total_variants": 10257,
+  "train_size": 8205,
+  "val_size": 1026,
+  "test_size": 1026,
+  "pathogenic_count": 4039,
+  "benign_count": 6218,
+  "class_imbalance_ratio": 0.65,
+  "african_frequency_adjustments": 0,
+  "variants_with_afr_frequency": 1000,
+  "variants_with_afr_freq_gt_1pct": 348,
+  "variants_with_afr_freq_gt_5pct": 216,
+  "random_seed": 42,
+  "train_split": 0.8,
+  "val_split": 0.1,
+  "test_split": 0.1
 }
