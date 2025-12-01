@@ -30,12 +30,12 @@ Follow these instructions to set up and run the project locally.
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-repo/variant-analysis-evo2.git
+    git clone https://github.com/your-repo/evomed-capstone-project.git
     ```
 
 2.  **Navigate to the frontend directory:**
     ```bash
-    cd variant-analysis-evo2/evomed-nextjs-frontend
+    cd evomed-capstone-project/evomed-nextjs-frontend
     ```
 
 3.  **Install dependencies:**

@@ -1,56 +1,14 @@
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
+# Large data files
+*.tsv
+*.csv
+*.parquet
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
 
-# Log files
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Temporary files
-*.tmp
-*.swp
-*.swo
-*.swn
-*~
-/evomed-lightweight-model/venv
-/evomed-lightweight-model/data/variants(1).tsv
-/evomed-lightweight-model/data/variants(1).tsv
-# Editor directories and files
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.sublime-workspace
-.idea/
-*.iml
-
-# Frontend (Node.js/Next.js)
-node_modules/
-.next/
-.nuxt/
-dist/
-build/
-out/
-*.tsbuildinfo
-next-env.d.ts
-.env*.local
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Package manager lock files (optional - keep if you want consistent installs)
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
-
-# Backend (Python)
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -62,105 +20,59 @@ dist/
 downloads/
 eggs/
 .eggs/
+lib/
+lib64/
 parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
-
-# Virtual environments
-.env
-.venv
-env/
 venv/
+env/
 ENV/
-env.bak/
-venv.bak/
-.venv-*/
-.venv-py*/
 
-# Python environment files
-.env
-.env.local
-.env.development
-.env.test
-.env.production
-*.env
+# Model files
+*.pth
+*.pt
+*.onnx
+*.pb
+*.h5
+*.keras
 
 # Jupyter Notebook
 .ipynb_checkpoints
+*.ipynb
 
-# PyCharm
+# IDEs
+.vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Modal (if using Modal for backend)
-.modal*
+# OS
+.DS_Store
+Thumbs.db
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Node modules
+node_modules/
 
-# Coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Testing
 .pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# Project specific
-brca1_analysis_plot.png
+.coverage
+htmlcov/
 
 # Backup files
 *.bak
-*.backup
-evomed-lightweight-model/data/clinvar_variant_summary.txt.gz
+*~
