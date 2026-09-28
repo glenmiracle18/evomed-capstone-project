@@ -2,12 +2,6 @@
 
 ## Reducing Ancestral Bias in Genomic Medicine
 
-**Deployed Project URL**: [https://capstone.glenmiracle.site](https://capstone.glenmiracle.site)
-
-**GitHub Repository**: [https://github.com/glenmiracle18/evomed-capstone-project](https://github.com/glenmiracle18/evomed-capstone-project)
-
-**Figma Prototype**: [https://www.figma.com/design/7ZdmnpHnRiyH00COkcURCJ/Capstone-Protoype?node-id=0-1&t=HMomzGvU5TMPyF7I-1](https://www.figma.com/design/7ZdmnpHnRiyH00COkcURCJ/Capstone-Protoype?node-id=0-1&t=HMomzGvU5TMPyF7I-1)
-
 ---
 
 ## Table of Contents
